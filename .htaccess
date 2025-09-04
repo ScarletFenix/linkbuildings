@@ -1,0 +1,56 @@
+RewriteEngine On
+
+# Don't rewrite existing files or folders
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Force remove trailing slashes (SEO friendly)
+RewriteRule ^(.*)/$ /$1 [L,R=301]
+
+# Checkout route with dynamic service slug
+RewriteRule ^checkout/([^/]+)$ checkout.php?service=$1 [L,QSA]
+
+# Static routes without extensions
+RewriteRule ^login$ login.php [L]
+RewriteRule ^register$ register.php [L]
+RewriteRule ^dashboard$ dashboard.php [L]
+RewriteRule ^teqnowebs$ Teqnowebs.html [L]
+RewriteRule ^test-db$ test-db.php [L]
+RewriteRule ^index$ index.html [L]
+
+# Redirect root to index.html
+DirectoryIndex index.php index.html
+
+# Custom 404 page
+ErrorDocument 404 /404.php
+
+# Deny access to sensitive files
+<FilesMatch "\.(ini|log|sql|sh|bak|inc|env|db|conf|htaccess|htpasswd)$">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+# Gzip Compression
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/plain
+  AddOutputFilterByType DEFLATE text/html
+  AddOutputFilterByType DEFLATE text/xml
+  AddOutputFilterByType DEFLATE text/css
+  AddOutputFilterByType DEFLATE application/json
+  AddOutputFilterByType DEFLATE application/javascript
+  AddOutputFilterByType DEFLATE application/x-javascript
+</IfModule>
+
+# Browser Caching
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/jpg "access plus 30 days"
+  ExpiresByType image/jpeg "access plus 30 days"
+  ExpiresByType image/png "access plus 30 days"
+  ExpiresByType text/css "access plus 7 days"
+  ExpiresByType application/javascript "access plus 7 days"
+</IfModule>
+
+# Redirect www to non-www
+RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
