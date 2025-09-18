@@ -14,7 +14,7 @@ RewriteRule ^checkout/([^/]+)$ checkout.php?service=$1 [L,QSA]
 RewriteRule ^login$ login.php [L]
 RewriteRule ^register$ register.php [L]
 RewriteRule ^dashboard$ dashboard.php [L]
-RewriteRule ^teqnowebs$ Teqnowebs.html [L]
+RewriteRule ^linkbuildings$ linkbuildings.html [L]
 RewriteRule ^test-db$ test-db.php [L]
 RewriteRule ^index$ index.html [L]
 
@@ -54,3 +54,8 @@ ErrorDocument 404 /404.php
 # Redirect www to non-www
 RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
 RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+
+
+
+
+

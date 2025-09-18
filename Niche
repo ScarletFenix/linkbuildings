@@ -1,0 +1,58 @@
+'automotive',
+    'beauty',
+    'business, E-business',
+    'computer games',
+    'construction',
+    'cooking',
+    'culture, art',
+    'diet, weight loss',
+    'entertainment',
+    'fashion, clothes',
+    'family, kids, pregnancy',
+    'finance, banking & insurance',
+    'health, medical',
+    'home & garden, interior',
+    'technology',
+    'music',
+    'real estate',
+    'travel, tour, hotels',
+    'sports, fitness',
+    'agriculture and forestry',
+    'wedding',
+    'education, science',
+    'dating, relationships',
+    'food, drink',
+    'e-commerce and shopping',
+    'news and media',
+    'pets',
+    'films and TV',
+    'jobs and career',
+    'nature and hobbies',
+
+
+
+    ## Country 
+    germany
+    spain 
+    italy
+    austria
+    swesterland
+    sweden
+    norway
+    denmark
+    finland
+    estonia
+    portugal
+    brazil 
+    belgium 
+    neathersland 
+    bulgaria
+    romania
+    poland 
+    latvia
+    UK
+    france
+    Greec
+    Hungary
+    solvekia
+    solvenia

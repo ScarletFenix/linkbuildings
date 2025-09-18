@@ -1,6 +1,8 @@
 <?php
-require_once './includes/auth.php';
+require_once __DIR__ . '/includes/auth.php';
+requireRole('buyer');
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

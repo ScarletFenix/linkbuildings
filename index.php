@@ -1,5 +1,15 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Default dashboard for buyers
+$dashboardLink = './dashboard.php';
+
+// Admins go to platform
+if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
+    $dashboardLink = './platform.php';
+}
 ?>
 
 
@@ -169,8 +179,8 @@ session_start();
             <div class="flex items-center space-x-4">
                 <div class="hidden md:flex items-center space-x-4">
                     <?php if (isset($_SESSION['user_id'])): ?>
-                        <!-- Show Dashboard/Logout if logged in -->
-                        <a href="./dashboard.php"
+                        <!-- Show role-based Dashboard -->
+                        <a href="<?php echo $dashboardLink; ?>"
                            class="px-5 py-2 rounded-lg font-medium text-white bg-green-600 hover:bg-green-700 transition-colors">
                            Dashboard
                         </a>
@@ -211,7 +221,8 @@ session_start();
             <a href="#faq" class="text-xl text-gray-700 hover:text-blue-600 font-medium">FAQ</a>
 
             <?php if (isset($_SESSION['user_id'])): ?>
-                <a href="./dashboard.php"
+                <!-- Mobile role-based Dashboard -->
+                <a href="<?php echo $dashboardLink; ?>"
                    class="px-5 py-2 rounded-lg font-medium text-white bg-green-600 hover:bg-green-700 transition-colors">
                    Dashboard
                 </a>
