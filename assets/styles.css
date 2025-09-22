@@ -1,0 +1,23 @@
+/* Custom thin scrollbar for table container */
+.max-h-\[800px\].overflow-y-auto::-webkit-scrollbar {
+  width: 6px;   /* thin scrollbar */
+}
+
+.max-h-\[800px\].overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent; /* no track */
+}
+
+.max-h-\[800px\].overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1; /* slate-300 */
+  border-radius: 9999px;     /* fully rounded */
+}
+
+.max-h-\[800px\].overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8; /* darker on hover */
+}
+
+/* Firefox */
+.max-h-\[800px\].overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}

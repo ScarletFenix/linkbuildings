@@ -61,9 +61,9 @@ $_SESSION['user_role']  = $user['role'];
 
 // Redirect based on role
 if ($user['role'] === 'admin') {
-    header('Location: ./platform.php');
+    header('Location: ../linkbuildings/admin/platform.php');
 } else {
-    header('Location: ./dashboard.php');
+    header('Location: ../dashboard.php');
 }
 exit;
         

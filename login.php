@@ -13,7 +13,7 @@ $config = require __DIR__ . '/includes/.env.php';
 
     <!-- Left: Image -->
     <div class="hidden md:block w-2/5">
-      <img src="/linkbuildings/upload/login_img.jpg" alt="Login Illustration" class="w-full h-full object-cover">
+      <img src="/linkbuildings/assets/img/login_img.jpg" alt="Login Illustration" class="w-full h-full object-cover">
     </div>
 
     <!-- Right: Form -->

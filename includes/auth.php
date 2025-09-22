@@ -58,7 +58,7 @@ function requireRole($roles) {
     if (!in_array($userRole, $roles, true)) {
         // Redirect based on role
         if ($userRole === 'admin') {
-            header("Location: ./platform.php");
+            header("Location: /admin/platform.php");
         } elseif ($userRole === 'buyer') {
             header("Location: ./dashboard.php");
         } else {

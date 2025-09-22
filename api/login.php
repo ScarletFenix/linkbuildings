@@ -55,7 +55,7 @@ if ($user && password_verify($password, $user['password'])) {
 
     // ✅ Redirect based on role
     if ($user['role'] === 'admin') {
-        header("Location: ../platform.php");
+        header("Location: ../admin/platform.php");
     } else {
         // Default: buyer
         header("Location: ../dashboard.php");

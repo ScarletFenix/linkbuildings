@@ -7,9 +7,9 @@ $countries = ["Germany","Spain","Italy","Austria","Sweden","Norway","Denmark","F
               "Belgium","Netherlands","Romania","Poland","UK","France","Greece","Hungary","Slovakia","Slovenia"];
 
 $nichesList = [
-    'automotive','beauty','business, E-business','computer games','construction',
+    'automotive','beauty','business, E-business','games','construction',
     'cooking','culture, art','diet, weight loss','entertainment','fashion, clothes',
-    'family, kids, pregnancy','finance, banking & insurance','health, medical',
+    'family, kids, pregnancy','banking & finance','insurance','health, medical',
     'home & garden, interior','technology','music','real estate','travel, tour, hotels',
     'sports, fitness','agriculture and forestry','wedding','education, science',
     'dating, relationships','food, drink','e-commerce and shopping','news and media',
@@ -108,6 +108,68 @@ $nichesList = [
     </div>
 <!-- Table Wrapper End -->
 <!-- Table Wrapper End -->
+
+
+<!-- Edit Modal -->
+<div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg shadow p-6 w-full max-w-2xl">
+    <h2 class="text-xl font-bold mb-4">Edit Site</h2>
+    <form id="editForm" enctype="multipart/form-data" class="grid grid-cols-2 gap-4">
+      <input type="hidden" name="id">
+
+      <div>
+        <label class="block text-sm font-medium">Site Name</label>
+        <input type="text" name="site_name" class="w-full border rounded p-2" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Niche</label>
+        <input type="text" name="niche" class="w-full border rounded p-2" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Site URL</label>
+        <input type="url" name="site_url" class="w-full border rounded p-2" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Price (€)</label>
+        <input type="number" step="0.01" name="price" class="w-full border rounded p-2" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">DR</label>
+        <input type="number" name="dr" class="w-full border rounded p-2" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Traffic</label>
+        <input type="number" name="traffic" class="w-full border rounded p-2" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Country</label>
+        <input type="text" name="country" class="w-full border rounded p-2" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Backlinks</label>
+        <input type="number" name="backlinks" class="w-full border rounded p-2" required>
+      </div>
+      <div class="col-span-2">
+        <label class="block text-sm font-medium">Description</label>
+        <textarea name="description" rows="3" class="w-full border rounded p-2" required></textarea>
+      </div>
+      <div class="col-span-2">
+        <label class="block text-sm font-medium">Site Image</label>
+        <!-- 📌 File input -->
+        <input type="file" name="site_img" class="w-full border rounded p-2">
+        <!-- 📌 Preview -->
+        <img id="editPreviewImg" src="" alt="Current Site Image" class="mt-2 max-h-32 hidden border rounded">
+      </div>
+
+      <div class="col-span-2 flex justify-end gap-2 mt-4">
+        <button type="button" id="closeEditModal" class="bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Update</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- End Edit Modal -->
 
 
 

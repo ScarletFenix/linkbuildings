@@ -1,3 +1,5 @@
 # Ignore the vendor directory
 /vendor/
 
+# uploded files
+/uploads/sites

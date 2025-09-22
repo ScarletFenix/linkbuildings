@@ -14,7 +14,7 @@ $config = require __DIR__ . '/includes/.env.php'; // Ensure .env.php returns GOO
     
     <!-- Image Section -->
     <div class="hidden md:block w-2/5">
-      <img src="/linkbuildings/upload/register_img.jpg" alt="Registration Illustration" class="w-full h-full object-cover">
+      <img src="/linkbuildings/assets/img/register_img.jpg" alt="Registration Illustration" class="w-full h-full object-cover">
     </div>
     
     <!-- Form Section -->

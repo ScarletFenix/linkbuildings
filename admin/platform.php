@@ -1,14 +1,19 @@
 <?php
-require_once __DIR__ . '/includes/auth.php';
-requireRole('admin'); // only admin allowed
+require_once __DIR__ . '/../includes/auth.php';
+
+// Only allow admin users
+requireRole('admin');
+
+
+
 
 // Default page is dashboard if not specified
 $page = $_GET['page'] ?? 'dashboard';
-$file = __DIR__ . "/admin/pages/{$page}.php";
+$file = __DIR__ . "/pages/{$page}.php";
 
 if (!file_exists($file)) {
     $page = "404";
-    $file = __DIR__ . "/admin/pages/404.php";
+    $file = __DIR__ . "/pages/404.php";
 }
 
 // AJAX partial load (no layout)
@@ -105,7 +110,7 @@ if (isset($_GET['ajax'])) {
         <i class="fas fa-bars text-xl"></i>
       </button>
       <h2 class="text-lg font-semibold text-gray-800 md:hidden">Admin Platform</h2>
-      <a href="./api/logout.php" class="text-red-500 hover:underline flex items-center">
+      <a href="../api/logout.php" class="text-red-500 hover:underline flex items-center">
         <i class="fas fa-sign-out-alt mr-1"></i> <span class="hidden md:inline">Logout</span>
       </a>
     </header>
@@ -180,7 +185,7 @@ if (isset($_GET['ajax'])) {
   </script>
   
 <!-- Example if your file is in /secondfolder/myscript.js -->
-<script src="admin/assets/js/tables.js"></script>
+<script src="assets/js/tables.js"></script>
 
 
 
