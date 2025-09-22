@@ -118,7 +118,6 @@ async function loadSites(page = 1) {
             <div class="flex items-center justify-center gap-4 mb-4 bg-gray-50 border border-gray-200 rounded-md p-3">
               <h3 class="text-lg font-semibold">Overview:</h3>
               <div>
-                <span class="font-medium">Link: </span>
                 <a href="${site.site_url}" target="_blank" class="text-blue-600 underline">${site.site_url}</a>
               </div>
             </div>
@@ -135,18 +134,21 @@ async function loadSites(page = 1) {
               <div class="p-4 bg-white shadow rounded-lg">
                 <div class="text-sm font-bold text-gray-600">Backlinks</div>
                 <div class="text-2xl font-semibold text-purple-600">${site.backlinks}</div>
-              </div>
+              </div>    
             </div>
 
-            <div class="grid grid-cols-2 gap-6 mb-6">
-              <div class="w-full h-72 bg-white shadow rounded-lg flex items-center justify-center">
-                <img src="${site.site_img_url}" alt="${site.site_name}" class="object-cover w-full h-full rounded-lg">
-              </div>
-              <div class="bg-white p-6 shadow rounded-lg text-left flex flex-col">
-                <div class="font-semibold mb-3 text-lg">Description</div>
-                <p class="text-sm text-gray-700 leading-relaxed">${site.description || "No description available."}</p>
-              </div>
-            </div>
+           <div class="grid grid-cols-2 gap-6 mb-6">
+  <div class="w-full h-72 bg-white shadow rounded-lg flex items-center justify-center">
+    <img src="${site.site_img_url}" alt="${site.site_name}" class="object-cover w-full h-full rounded-lg">
+  </div>
+  <div class="bg-white p-6 shadow rounded-lg text-left flex flex-col">
+    <div class="font-semibold mb-3 text-lg text-center">Description</div>
+    <div class="text-sm text-gray-700 leading-relaxed overflow-y-auto max-h-48 pr-2">
+      ${site.description || "No description available."}
+    </div>
+  </div>
+</div>
+
 
             <div class="bg-white p-4 shadow rounded-lg text-sm text-gray-700">
               <p>The data presented in this report have been aggregated from two industry‐leading platforms: <strong>Ahrefs</strong> and <strong>SearchAPI</strong>.</p>
@@ -211,6 +213,7 @@ async function loadSites(page = 1) {
     console.error("Failed to load sites:", err);
   }
 }
+
 
 function formatNiches(niches) {
   let html = "";
