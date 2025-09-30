@@ -7,13 +7,14 @@ $countries = ["Germany","Spain","Italy","Austria","Sweden","Norway","Denmark","F
               "Belgium","Netherlands","Romania","Poland","UK","France","Greece","Hungary","Slovakia","Slovenia"];
 
 $nichesList = [
-    'automotive','beauty','business, E-business','games','construction',
-    'cooking','culture, art','diet, weight loss','entertainment','fashion, clothes',
-    'family, kids, pregnancy','banking & finance','insurance','health, medical',
-    'home & garden, interior','technology','music','real estate','travel, tour, hotels',
-    'sports, fitness','agriculture and forestry','wedding','education, science',
-    'dating, relationships','food, drink','e-commerce and shopping','news and media',
-    'pets','films and TV','jobs and career','nature and hobbies'
+    'automotive','beauty','business & e-business','computer games','construction',
+'cooking','culture & art','diet & weight loss','entertainment','fashion & clothing',
+'family, kids & pregnancy','finance, banking & insurance','health & medical',
+'home & garden & interior','technology','music','real estate','travel, tours & hotels',
+'sports & fitness','agriculture & forestry','wedding','education & science',
+'dating & relationships','food & drink','e-commerce & shopping','news & media',
+'pets','films & TV','jobs & careers','nature & hobbies'
+
 ];
 ?>
 

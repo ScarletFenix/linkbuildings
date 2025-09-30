@@ -8,7 +8,7 @@ $dashboardLink = './dashboard.php';
 
 // Admins go to platform
 if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
-    $dashboardLink = './platform.php';
+    $dashboardLink = './admin/platform.php';
 }
 ?>
 
@@ -21,9 +21,8 @@ if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
     <title>LinkBuildings - Professional Link Building Services</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
         :root {
             --primary: #2563eb;
             --secondary: #10b981;
@@ -36,8 +35,14 @@ if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
             scroll-behavior: smooth;
         }
         
+        .nav-scrolled {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
         .hero-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0f172a 100%);
         }
         
         .hover-lift {
@@ -49,10 +54,52 @@ if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
         
+        /* Animation classes */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        .fade-in-left {
+            opacity: 0;
+            transform: translateX(-30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        .fade-in-right {
+            opacity: 0;
+            transform: translateX(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        .animate-in {
+            opacity: 1;
+            transform: translate(0, 0);
+        }
+        
+        .stagger-delay-1 { transition-delay: 0.1s; }
+        .stagger-delay-2 { transition-delay: 0.2s; }
+        .stagger-delay-3 { transition-delay: 0.3s; }
+        .stagger-delay-4 { transition-delay: 0.4s; }
+        .stagger-delay-5 { transition-delay: 0.5s; }
+        
+        /* Mobile menu styles */
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .mobile-menu.open {
+            transform: translateX(0);
+        }
+        
+        /* Stats counter animation */
         .stats-counter {
             transition: all 0.3s ease;
         }
         
+        /* Feature cards */
         .feature-card {
             transition: all 0.3s ease;
             border: 1px solid #e5e7eb;
@@ -63,15 +110,18 @@ if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
             transform: translateY(-2px);
         }
         
+        /* Testimonial cards */
         .testimonial-card {
             background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
             border: 1px solid #e2e8f0;
         }
         
+        /* CTA gradient */
         .cta-gradient {
             background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
         }
         
+        /* Pricing cards */
         .pricing-card {
             transition: all 0.3s ease;
         }
@@ -91,6 +141,7 @@ if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
             transform: scale(1.05) translateY(-10px);
         }
         
+        /* FAQ styles */
         .faq-item {
             border-bottom: 1px solid #e5e7eb;
         }
@@ -108,15 +159,6 @@ if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
         
         .faq-answer.open {
             max-height: 500px;
-        }
-        
-        .mobile-menu {
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-        }
-        
-        .mobile-menu.open {
-            transform: translateX(0);
         }
         
         /* Loading animation for form submission */
@@ -155,30 +197,63 @@ if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
             opacity: 1;
             transform: translateY(0);
         }
+        
+        /* Table styles */
+        .table-container {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .table-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .table-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+        
+        .table-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+        
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
     </style>
 </head>
 <body class="bg-gray-50">
     <!-- Header/Navigation -->
-    <header class="bg-white shadow-sm fixed w-full z-50">
-    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 shadow-sm">
-        <div class="flex justify-between items-center py-4">
-            <div class="flex items-center">
-                <a href="./index.php" class="text-2xl font-bold text-blue-600">
-                    Link<span class="text-green-500">Buildings</span>
-                </a>
-            </div>
+    <header id="navbar" class="fixed w-full z-50 transition-all duration-300">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <a href="./index.php" class="text-2xl font-bold text-white flex items-center">
+                        <svg class="w-8 h-8 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="url(#gradient)"/>
+                            <defs>
+                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#3B82F6"/>
+                                    <stop offset="100%" stop-color="#10B981"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        Link<span class="text-green-400">Buildings</span>
+                    </a>
+                </div>
 
-            <!-- Desktop Menu -->
-            <div class="hidden md:flex space-x-8">
-                <a href="#services" class="text-gray-700 hover:text-blue-600 font-medium">Services</a>
-                <a href="#pricing" class="text-gray-700 hover:text-blue-600 font-medium">Pricing</a>
-                <a href="#testimonials" class="text-gray-700 hover:text-blue-600 font-medium">Testimonials</a>
-                <a href="#faq" class="text-gray-700 hover:text-blue-600 font-medium">FAQ</a>
-            </div>
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8">
+                    <a href="#services" class="text-gray-300 hover:text-white font-medium transition-colors duration-300">Services</a>
+                    <a href="#pricing" class="text-gray-300 hover:text-white font-medium transition-colors duration-300">Pricing</a>
+                    <a href="#testimonials" class="text-gray-300 hover:text-white font-medium transition-colors duration-300">Testimonials</a>
+                    <a href="#faq" class="text-gray-300 hover:text-white font-medium transition-colors duration-300">FAQ</a>
+                </div>
 
-            <div class="flex items-center space-x-4">
-                <div class="hidden md:flex items-center space-x-4">
-                    <?php if (isset($_SESSION['user_id'])): ?>
+                <div class="flex items-center space-x-4">
+                    <div class="hidden md:flex items-center space-x-4">
+                         <?php if (isset($_SESSION['user_id'])): ?>
                         <!-- Show role-based Dashboard -->
                         <a href="<?php echo $dashboardLink; ?>"
                            class="px-5 py-2 rounded-lg font-medium text-white bg-green-600 hover:bg-green-700 transition-colors">
@@ -195,119 +270,175 @@ if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
                            Register
                         </a>
                     <?php endif; ?>
-                </div>
 
-                <!-- Mobile menu toggle -->
-                <button id="mobile-menu-button" class="md:hidden text-gray-700">
-                    <i class="fas fa-bars text-xl"></i>
+                    </div>
+
+                    <!-- Mobile menu toggle -->
+                    <button id="mobile-menu-button" class="md:hidden text-white">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="mobile-menu fixed inset-0 bg-slate-900 z-50 p-8 md:hidden">
+            <div class="flex justify-between items-center mb-12">
+                <div class="text-2xl font-bold text-white flex items-center">
+                    <svg class="w-8 h-8 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="url(#gradient)"/>
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#3B82F6"/>
+                                <stop offset="100%" stop-color="#10B981"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    Link<span class="text-green-400">Buildings</span>
+                </div>
+                <button id="mobile-menu-close" class="text-white">
+                    <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
-        </div>
-    </nav>
 
-    <!-- Mobile Menu -->
-    <div id="mobile-menu" class="mobile-menu fixed inset-0 bg-white z-50 p-8 md:hidden">
-        <div class="flex justify-between items-center mb-12">
-            <div class="text-2xl font-bold text-blue-600">Link<span class="text-green-500">Buildings</span></div>
-            <button id="mobile-menu-close" class="text-gray-700">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-        </div>
+            <div class="flex flex-col space-y-8">
+                <a href="#services" class="text-xl text-gray-300 hover:text-white font-medium">Services</a>
+                <a href="#pricing" class="text-xl text-gray-300 hover:text-white font-medium">Pricing</a>
+                <a href="#testimonials" class="text-xl text-gray-300 hover:text-white font-medium">Testimonials</a>
+                <a href="#faq" class="text-xl text-gray-300 hover:text-white font-medium">FAQ</a>
 
-        <div class="flex flex-col space-y-8">
-            <a href="#services" class="text-xl text-gray-700 hover:text-blue-600 font-medium">Services</a>
-            <a href="#pricing" class="text-xl text-gray-700 hover:text-blue-600 font-medium">Pricing</a>
-            <a href="#testimonials" class="text-xl text-gray-700 hover:text-blue-600 font-medium">Testimonials</a>
-            <a href="#faq" class="text-xl text-gray-700 hover:text-blue-600 font-medium">FAQ</a>
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <!-- Mobile role-based Dashboard -->
+                    <a href="<?php echo $dashboardLink; ?>"
+                       class="px-5 py-3 rounded-lg font-medium text-white bg-gradient-to-r from-green-500 to-green-600 text-center">
+                       Dashboard
+                    </a>
+                <?php else: ?>
+                    <a href="./login.php"
+                       class="px-5 py-3 rounded-lg font-medium text-white border border-white/30 text-center hover:bg-white/10 transition-colors">
+                       Login
+                    </a>
+                    <a href="./register.php"
+                       class="px-5 py-3 rounded-lg font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 text-center">
+                       Register
+                    </a>
+                <?php endif; ?>
+            </div>
 
-            <?php if (isset($_SESSION['user_id'])): ?>
-                <!-- Mobile role-based Dashboard -->
-                <a href="<?php echo $dashboardLink; ?>"
-                   class="px-5 py-2 rounded-lg font-medium text-white bg-green-600 hover:bg-green-700 transition-colors">
-                   Dashboard
-                </a>
-            <?php else: ?>
-                <a href="./login.php"
-                   class="px-5 py-2 rounded-lg font-medium text-blue-600 border border-blue-600 hover:bg-blue-50 transition-colors">
-                   Login
-                </a>
-                <a href="./register.php"
-                   class="px-5 py-2 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors">
-                   Register
-                </a>
-            <?php endif; ?>
-        </div>
-
-        <div class="absolute bottom-8 left-8 right-8">
-            <div class="flex justify-center space-x-6">
-                <a href="#" class="text-gray-500 hover:text-blue-600"><i class="fab fa-twitter text-xl"></i></a>
-                <a href="#" class="text-gray-500 hover:text-blue-600"><i class="fab fa-linkedin text-xl"></i></a>
-                <a href="#" class="text-gray-500 hover:text-blue-600"><i class="fab fa-facebook text-xl"></i></a>
+            <div class="absolute bottom-8 left-8 right-8">
+                <div class="flex justify-center space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-twitter text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-linkedin text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-facebook text-xl"></i></a>
+                </div>
             </div>
         </div>
-    </div>
-</header>
+    </header>
 
     <!-- Hero Section -->
-    <section class="pt-24 md:pt-32 pb-16 md:pb-20 hero-gradient text-white relative">
-  <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-12">
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-start">
-
-      <!-- Left Content (stacked on mobile) -->
-      <div class="md:col-span-4 flex flex-col justify-center text-center md:text-left">
-        <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 md:mb-6 leading-tight drop-shadow-md">
-          Build Quality Backlinks That <span class="text-green-300">Drive Results</span>
-        </h1>
-        <p class="text-base sm:text-lg md:text-xl text-blue-100 leading-relaxed mb-6 md:mb-8">
-          We specialize in premium link building services that boost search rankings, 
-          increase organic traffic, and establish your website’s authority. 
-          Below is a sample showcase of sites we work with.
-        </p>
-        <div class="flex flex-wrap justify-center md:justify-start gap-3 sm:gap-4">
-          <a href="#contact" class="bg-white text-blue-600 px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
-            Start Building Links
-          </a>
-        </div>
-      </div>
-
-      <!-- Right Showcase Table -->
-      <div class="md:col-span-8 mt-10 md:mt-0">
-        <div class="bg-white/95 backdrop-blur-md shadow-2xl rounded-2xl border border-gray-200 p-4 sm:p-6 w-full">
-          <!-- Table -->
-          <div class="overflow-x-auto rounded-lg">
-            <table id="sitesTable" class="w-full text-xs sm:text-sm text-gray-800 text-center">
-              <thead class="bg-gradient-to-r from-blue-600 to-green-500 text-white text-[11px] sm:text-xs uppercase tracking-wider">
-                <tr>
-                  <th class="px-2 sm:px-3 py-2 sm:py-3">Niche</th>
-                  <th class="px-2 sm:px-3 py-2 sm:py-3">Site</th>
-                  <th class="px-2 sm:px-3 py-2 sm:py-3">Homepage</th>
-                  <th class="px-2 sm:px-3 py-2 sm:py-3">Article</th>
-                  <th class="px-2 sm:px-3 py-2 sm:py-3">DR</th>
-                  <th class="px-2 sm:px-3 py-2 sm:py-3">Traffic</th>
-                  <th class="px-2 sm:px-3 py-2 sm:py-3">Country</th>
-                </tr>
-              </thead>
-              <tbody id="tableBody" class="divide-y divide-gray-200"></tbody>
-            </table>
-          </div>
-
-          <!-- Footer Row with Pagination + Disclaimer -->
-          <div class="flex flex-col sm:flex-row justify-between items-center gap-3 mt-4 text-[11px] sm:text-xs text-gray-600">
-            <!-- Compact Pagination -->
-            <div id="pagination" class="flex gap-1"></div>
-            <!-- Disclaimer -->
-            <p class="italic text-center sm:text-right">
-              * Traffic data from 
-              <a href="https://ahrefs.com" target="_blank" class="underline hover:text-blue-600">Ahrefs</a> 
-              & <a href="https://semrush.com" target="_blank" class="underline hover:text-green-600">SEMrush</a>.
-            </p>
-          </div>
-        </div>
-      </div>
-
-    </div>
+    <section class="pt-24 md:pt-32 pb-16 md:pb-24 hero-gradient text-white relative overflow-hidden">
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 opacity-10">
+  <div 
+    class="absolute inset-0"
+    style="
+      background-color: #DFDBE5;
+      background-image: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2716%27 height=%2732%27 viewBox=%270 0 16 32%27%3E%3Cg fill=%27%239C92AC%27 fill-opacity=%270.48%27%3E%3Cpath fill-rule=%27evenodd%27 d=%27M0 24h4v2H0v-2zm0 4h6v2H0v-2zm0-8h2v2H0v-2zM0 0h4v2H0V0zm0 4h2v2H0V4zm16 20h-6v2h6v-2zm0 4H8v2h8v-2zm0-8h-4v2h4v-2zm0-20h-6v2h6V0zm0 4h-4v2h4V4zm-2 12h2v2h-2v-2zm0-8h2v2h-2V8zM2 8h10v2H2V8zm0 8h10v2H2v-2zm-2-4h14v2H0v-2zm4-8h6v2H4V4zm0 16h6v2H4v-2zM6 0h2v2H6V0zm0 24h2v2H6v-2z%27/%3E%3C/g%3E%3C/svg%3E');
+    background-repeat: repeat;
+  ">
   </div>
-</section>
+</div>
+
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                
+                <!-- Left Content -->
+                <div class="text-center lg:text-left">
+                    <div class="mb-4 fade-in-up stagger-delay-1">
+                        <span class="inline-block bg-blue-500/20 text-blue-300 text-sm font-semibold px-4 py-2 rounded-full mb-4">
+                            Premium Link Building Services
+                        </span>
+                    </div>
+                    
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 fade-in-up stagger-delay-2">
+                        <span class="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                            Authority Backlinks
+                        </span>
+                        <br>That Drive <span class="text-cyan-300">Real SEO Results</span>
+                    </h1>
+                    
+                    <p class="text-xl text-blue-100 leading-relaxed mb-8 max-w-2xl fade-in-up stagger-delay-3">
+                        We acquire premium backlinks from high-authority, niche-relevant domains to enhance search visibility, scale organic traffic, and strengthen domain authority.
+Our methodology leverages data from leading SEO platforms, ensuring measurable improvements in rankings and ROI.
+                    </p>
+                    
+                    <!-- <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start fade-in-up stagger-delay-4">
+                        <a href="#contact" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold px-8 py-4 rounded-lg transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl">
+                            Start Your Campaign
+                        </a>
+                        <a href="#sites-showcase" class="border border-blue-400 text-blue-300 hover:bg-blue-400/10 font-semibold px-8 py-4 rounded-lg transition-all duration-300">
+                            View Our Portfolio
+                        </a>
+                    </div> -->
+                    
+                    <!-- Trust Indicators -->
+                    <div class="mt-12 flex flex-wrap items-center justify-center lg:justify-start gap-8 text-blue-200 fade-in-up stagger-delay-5">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-cyan-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>Premium Domain Authority</span>
+                        </div>
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-cyan-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>White-Hat Strategies</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Content - Improved Table -->
+                <div id="sites-showcase" class="w-[900px] bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 p-6 shadow-2xl fade-in-right">
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-bold text-white mb-2">Our Premium Network</h3>
+                        <p class="text-blue-200">Sample of authoritative sites we work with</p>
+                    </div>
+                    
+                    <!-- Improved Table with Scroll -->
+                    <div class="table-container max-h-96 overflow-y-auto rounded-xl border border-white/10 w-full">
+  <table class="w-full text-sm table-fixed">
+    <thead class="bg-white/5 sticky top-0">
+      <tr class="text-left text-blue-200 uppercase text-xs font-semibold tracking-wider">
+        <th class="py-4 px-6 w-[25%]">Niche</th>
+        <th class="py-4 px-6 w-[35%]">Domain</th>
+        <th class="py-4 px-6 w-[15%] text-right">DR</th>
+        <th class="py-4 px-6 w-[15%] text-right">Traffic</th>
+        <th class="py-4 px-6 w-[10%] text-right">Price</th>
+        <th class="py-4 px-6 w-[10%] text-right">Country</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-white/5" id="tableBody">
+      <!-- Rows -->
+    </tbody>
+  </table>
+</div>
+
+                    
+                    <div class="mt-4 flex justify-between items-center text-xs text-blue-300">
+                        <span>Showing <span id="visibleRows">10</span> of <span id="totalRows">50</span> premium domains</span>
+                        <a href="#" class="text-cyan-300 hover:text-cyan-200 font-medium flex items-center">
+                            View Full Portfolio
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
 
 
@@ -675,17 +806,28 @@ if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
     </section>
 
     <!-- CTA Section -->
-    <section class="py-20 cta-gradient text-white">
-        <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-            <h2 class="text-3xl md:text-4xl font-bold mb-6">Ready to Boost Your Search Rankings?</h2>
-            <p class="text-xl mb-8 opacity-90">
-                Start building quality backlinks today and watch your website climb to the top of search results
-            </p>
-            <a href="#contact" class="inline-block bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors hover-lift">
-                Get Free Consultation
-            </a>
-        </div>
-    </section>
+    <section class="relative py-20 cta-gradient text-white overflow-hidden">
+  <!-- Background pattern -->
+  <div class="absolute inset-0 opacity-10">
+    <div class="absolute inset-0" 
+         style="background-color: #1e3a8a; 
+                background-image: url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2716%27 height=%2732%27 viewBox=%270 0 16 32%27%3E%3Cg fill=%27%239C92AC%27 fill-opacity=%270.48%27%3E%3Cpath fill-rule=%27evenodd%27 d=%27M0 24h4v2H0v-2zm0 4h6v2H0v-2zm0-8h2v2H0v-2zM0 0h4v2H0V0zm0 4h2v2H0V4zm16 20h-6v2h6v-2zm0 4H8v2h8v-2zm0-8h-4v2h4v-2zm0-20h-6v2h6V0zm0 4h-4v2h4V4zm-2 12h2v2h-2v-2zm0-8h2v2h-2V8zM2 8h10v2H2V8zm0 8h10v2H2v-2zm-2-4h14v2H0v-2zm4-8h6v2H4V4zm0 16h6v2H4v-2zM6 0h2v2H6V0zm0 24h2v2H6v-2z%27/%3E%3C/g%3E%3C/svg%3E'); 
+                background-repeat: repeat;">
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="relative max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+    <h2 class="text-3xl md:text-4xl font-bold mb-6">Ready to Boost Your Search Rankings?</h2>
+    <p class="text-xl mb-8 opacity-90">
+      Start building quality backlinks today and watch your website climb to the top of search results
+    </p>
+    <a href="#contact" class="inline-block bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-colors hover-lift">
+      Get Free Consultation
+    </a>
+  </div>
+</section>
+
 
     <!-- Footer -->
     <footer class="bg-gray-900 text-white py-16">
@@ -737,87 +879,173 @@ if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
     </footer>
 
     <script>
-         // Sample data (more than 5 rows for pagination)
-  const tableData = [
-    { niche: "Tech", site: "techinsight.com", homepage: "$150", article: "$90", dr: 72, traffic: "45k", country: "us" },
-    { niche: "Health", site: "wellnessdaily.org", homepage: "$120", article: "$70", dr: 65, traffic: "32k", country: "gb" },
-    { niche: "Business", site: "bizgrowth.net", homepage: "$180", article: "$110", dr: 78, traffic: "60k", country: "ca" },
-    { niche: "Finance", site: "moneyminds.io", homepage: "$200", article: "$130", dr: 82, traffic: "75k", country: "au" },
-    { niche: "Travel", site: "globetrekker.com", homepage: "$170", article: "$95", dr: 70, traffic: "40k", country: "in" },
-    { niche: "Education", site: "edulearners.com", homepage: "$140", article: "$80", dr: 68, traffic: "28k", country: "us" },
-    { niche: "Food", site: "dailyrecipes.net", homepage: "$130", article: "$85", dr: 66, traffic: "25k", country: "gb" },
-    { niche: "Sports", site: "proathletehub.com", homepage: "$160", article: "$100", dr: 74, traffic: "38k", country: "au" },
-    { niche: "Lifestyle", site: "modernliving.com", homepage: "$150", article: "$90", dr: 70, traffic: "50k", country: "us" },
-    { niche: "Entertainment", site: "moviemagic.org", homepage: "$180", article: "$110", dr: 75, traffic: "55k", country: "ca" },
-    { niche: "Tech", site: "techinsight.com", homepage: "$150", article: "$90", dr: 72, traffic: "45k", country: "us" },
-    { niche: "Health", site: "wellnessdaily.org", homepage: "$120", article: "$70", dr: 65, traffic: "32k", country: "gb" },
-    { niche: "Business", site: "bizgrowth.net", homepage: "$180", article: "$110", dr: 78, traffic: "60k", country: "ca" },
-    { niche: "Finance", site: "moneyminds.io", homepage: "$200", article: "$130", dr: 82, traffic: "75k", country: "au" },
-    { niche: "Travel", site: "globetrekker.com", homepage: "$170", article: "$95", dr: 70, traffic: "40k", country: "in" },
-    { niche: "Education", site: "edulearners.com", homepage: "$140", article: "$80", dr: 68, traffic: "28k", country: "us" },
-    { niche: "Food", site: "dailyrecipes.net", homepage: "$130", article: "$85", dr: 66, traffic: "25k", country: "gb" },
-    { niche: "Sports", site: "proathletehub.com", homepage: "$160", article: "$100", dr: 74, traffic: "38k", country: "au" },
-    { niche: "Fashion", site: "styletrends.io", homepage: "$190", article: "$120", dr: 77, traffic: "55k", country: "us" },
-    { niche: "Gaming", site: "gamerzone.net", homepage: "$175", article: "$115", dr: 73, traffic: "50k", country: "de" },
-    { niche: "Crypto", site: "cryptovision.org", homepage: "$210", article: "$140", dr: 80, traffic: "65k", country: "sg" },
-    { niche: "Real Estate", site: "propertyfocus.com", homepage: "$160", article: "$105", dr: 71, traffic: "42k", country: "ae" },
+        // Sample data for the table (increased to 50 rows)
+        const tableData = [
+            { niche: "Technology", site: "TechInsider.io", dr: 84, traffic: "120K/mo", price: "$850", status: "active", country: "US" },
+            { niche: "Finance", site: "WealthBuilders.com", dr: 79, traffic: "95K/mo", price: "$790", status: "active", country: "US" },
+            { niche: "Health", site: "WellnessToday.org", dr: 76, traffic: "82K/mo", price: "$720", status: "active", country: "US" },
+            { niche: "Business", site: "ExecutiveGrowth.net", dr: 81, traffic: "110K/mo", price: "$920", status: "active", country: "US" },
+            { niche: "Marketing", site: "DigitalStrategy.co", dr: 77, traffic: "88K/mo", price: "$750", status: "active", country: "US" },
+            { niche: "Lifestyle", site: "ModernLiving.com", dr: 72, traffic: "65K/mo", price: "$680", status: "active", country: "US" },
+            { niche: "Travel", site: "GlobeTrekker.com", dr: 75, traffic: "78K/mo", price: "$710", status: "active", country: "US" },
+            { niche: "Food", site: "GourmetKitchen.net", dr: 69, traffic: "52K/mo", price: "$590", status: "active", country: "US" },
+            { niche: "Education", site: "EduMasters.org", dr: 83, traffic: "115K/mo", price: "$880", status: "active", country: "US" },
+            { niche: "Sports", site: "AthleteHub.com", dr: 71, traffic: "61K/mo", price: "$640", status: "active", country: "US" },
+            { niche: "Entertainment", site: "PopCulture.io", dr: 68, traffic: "48K/mo", price: "$560", status: "active", country: "US" },
+            { niche: "Fashion", site: "StyleTrends.co", dr: 74, traffic: "72K/mo", price: "$690", status: "active" },
+            { niche: "Real Estate", site: "PropertyFocus.com", dr: 73, traffic: "68K/mo", price: "$670", status: "active" },
+            { niche: "Automotive", site: "AutoEnthusiast.net", dr: 70, traffic: "58K/mo", price: "$620", status: "active" },
+            { niche: "Gaming", site: "GameZone.io", dr: 76, traffic: "85K/mo", price: "$730", status: "active" },
+            { niche: "Parenting", site: "FamilyFirst.org", dr: 67, traffic: "45K/mo", price: "$540", status: "active" },
+            { niche: "Pets", site: "PetCareExperts.com", dr: 65, traffic: "38K/mo", price: "$510", status: "active" },
+            { niche: "Home Improvement", site: "DIYMastery.net", dr: 69, traffic: "55K/mo", price: "$600", status: "active" },
+            { niche: "Photography", site: "LensArtistry.co", dr: 72, traffic: "63K/mo", price: "$660", status: "active" },
+            { niche: "Fitness", site: "FitLifeJournal.com", dr: 75, traffic: "80K/mo", price: "$700", status: "active" },
+            { niche: "Cryptocurrency", site: "CryptoInsider.io", dr: 78, traffic: "92K/mo", price: "$780", status: "active" },
+            { niche: "Sustainability", site: "EcoLiving.org", dr: 74, traffic: "70K/mo", price: "$680", status: "active" },
+            { niche: "Career", site: "ProfessionalGrowth.net", dr: 80, traffic: "98K/mo", price: "$810", status: "active" },
+            { niche: "Beauty", site: "BeautyExperts.co", dr: 71, traffic: "60K/mo", price: "$630", status: "active" },
+            { niche: "Science", site: "ScienceDaily.io", dr: 85, traffic: "125K/mo", price: "$950", status: "active" },
+            { niche: "Politics", site: "PolicyReview.org", dr: 82, traffic: "105K/mo", price: "$870", status: "active" },
+            { niche: "Art", site: "CreativeExpressions.com", dr: 68, traffic: "50K/mo", price: "$570", status: "active" },
+            { niche: "Music", site: "MusicLovers.net", dr: 70, traffic: "56K/mo", price: "$610", status: "active" },
+            { niche: "Books", site: "LiteraryWorld.org", dr: 73, traffic: "66K/mo", price: "$650", status: "active" },
+            { niche: "History", site: "HistoricalInsights.com", dr: 77, traffic: "86K/mo", price: "$740", status: "active" },
+            { niche: "Psychology", site: "MindMatters.io", dr: 79, traffic: "94K/mo", price: "$800", status: "active" },
+            { niche: "Philosophy", site: "DeepThoughts.org", dr: 75, traffic: "76K/mo", price: "$690", status: "active" },
+            { niche: "Technology", site: "FutureTech.io", dr: 83, traffic: "112K/mo", price: "$890", status: "active" },
+            { niche: "Finance", site: "InvestmentGurus.com", dr: 81, traffic: "102K/mo", price: "$840", status: "active" },
+            { niche: "Health", site: "MedicalBreakthroughs.net", dr: 84, traffic: "118K/mo", price: "$920", status: "active" },
+            { niche: "Business", site: "StartupSuccess.co", dr: 78, traffic: "90K/mo", price: "$770", status: "active" },
+            { niche: "Marketing", site: "GrowthHackers.io", dr: 80, traffic: "96K/mo", price: "$790", status: "active" },
+            { niche: "Lifestyle", site: "UrbanLiving.com", dr: 72, traffic: "64K/mo", price: "$670", status: "active" },
+            { niche: "Travel", site: "AdventureSeekers.net", dr: 74, traffic: "74K/mo", price: "$710", status: "active" },
+            { niche: "Food", site: "CulinaryDelights.org", dr: 70, traffic: "57K/mo", price: "$620", status: "active" },
+            { niche: "Education", site: "LearningHub.io", dr: 82, traffic: "108K/mo", price: "$860", status: "active" },
+            { niche: "Sports", site: "ProAthleteLife.com", dr: 76, traffic: "84K/mo", price: "$730", status: "active" },
+            { niche: "Entertainment", site: "CelebrityNews.net", dr: 69, traffic: "53K/mo", price: "$580", status: "active" },
+            { niche: "Fashion", site: "HauteCouture.co", dr: 77, traffic: "88K/mo", price: "$750", status: "active" },
+            { niche: "Real Estate", site: "LuxuryProperties.com", dr: 79, traffic: "93K/mo", price: "$780", status: "active" },
+            { niche: "Automotive", site: "LuxuryCars.io", dr: 75, traffic: "79K/mo", price: "$720", status: "active" },
+            { niche: "Gaming", site: "EsportsElite.net", dr: 80, traffic: "97K/mo", price: "$800", status: "active" },
+            { niche: "Parenting", site: "ModernParent.org", dr: 71, traffic: "62K/mo", price: "$650", status: "active" },
+            { niche: "Pets", site: "AnimalLovers.com", dr: 68, traffic: "49K/mo", price: "$560", status: "active" },
+            { niche: "Home Improvement", site: "RenovationExperts.net", dr: 73, traffic: "67K/mo", price: "$680", status: "active" }
+        ];
 
-  ];
+        // Populate the table
+        function populateTable() {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+            
+            tableData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-white/5 transition-colors';
+                tr.innerHTML = `
+                    <td class="py-4 px-4 font-medium text-white">${row.niche}</td>
+                    <td class="py-4 px-4">
+                        <div class="flex items-center">
+                            <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                            <span class="text-cyan-300">${row.site}</span>
+                        </div>
+                    </td>
+                    <td class="py-4 px-4 text-right font-bold text-white">${row.dr}</td>
+                    <td class="py-4 px-4 text-right text-blue-200">${row.traffic}</td>
+                    <td class="py-4 px-4 text-right font-medium text-cyan-300">${row.price}</td>
+                    <td class="py-4 px-4 text-right font-medium text-cyan-300">${row.country}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+            
+            // Update row counts
+            document.getElementById('totalRows').textContent = tableData.length;
+            document.getElementById('visibleRows').textContent = Math.min(10, tableData.length);
+        }
 
-  const rowsPerPage = 10;
-  let currentPage = 1;
+        // Animation on scroll
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('.fade-in-up, .fade-in-left, .fade-in-right');
+            
+            elements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < window.innerHeight - elementVisible) {
+                    element.classList.add('animate-in');
+                }
+            });
+        }
 
-  function renderTable(page) {
-    const tableBody = document.getElementById("tableBody");
-    tableBody.innerHTML = "";
+        // Navbar scroll effect
+        function handleNavbarScroll() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('nav-scrolled');
+            } else {
+                navbar.classList.remove('nav-scrolled');
+            }
+        }
 
-    const start = (page - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-    const pageData = tableData.slice(start, end);
+        // Mobile menu functionality
+        function initMobileMenu() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenuClose = document.getElementById('mobile-menu-close');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            mobileMenuClose.addEventListener('click', () => {
+                mobileMenu.classList.remove('open');
+                document.body.style.overflow = 'auto';
+            });
+            
+            // Close mobile menu when clicking on links
+            const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+            mobileMenuLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.remove('open');
+                    document.body.style.overflow = 'auto';
+                });
+            });
+        }
 
-    pageData.forEach(row => {
-      const tr = document.createElement("tr");
-      tr.className = "hover:bg-gray-50";
-      tr.innerHTML = `
-        <td class="px-2 py-2 font-medium">${row.niche}</td>
-        <td class="px-2 py-2"><a href="#" class="text-blue-600 hover:underline">${row.site}</a></td>
-        <td class="px-2 py-2">${row.homepage}</td>
-        <td class="px-2 py-2">${row.article}</td>
-        <td class="px-2 py-2 font-bold">${row.dr}</td>
-        <td class="px-2 py-2">${row.traffic}</td>
-        <td class="px-2 py-2 flex items-center justify-center space-x-1">
-          <img src="https://flagcdn.com/w20/${row.country}.png" alt="${row.country} flag">
-        </td>
-      `;
-      tableBody.appendChild(tr);
-    });
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            populateTable();
+            initMobileMenu();
+            
+            // Initial animation check
+            animateOnScroll();
+            
+            // Event listeners
+            window.addEventListener('scroll', () => {
+                animateOnScroll();
+                handleNavbarScroll();
+            });
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
 
-    renderPagination();
-  }
-
-  function renderPagination() {
-    const pagination = document.getElementById("pagination");
-    pagination.innerHTML = "";
-
-    const totalPages = Math.ceil(tableData.length / rowsPerPage);
-
-    for (let i = 1; i <= totalPages; i++) {
-      const btn = document.createElement("button");
-      btn.innerText = i;
-      btn.className = `px-3 py-1 border rounded ${i === currentPage ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`;
-      btn.onclick = () => {
-        currentPage = i;
-        renderTable(currentPage);
-      };
-      pagination.appendChild(btn);
-    }
-  }
-
-  // Initial load
-  renderTable(currentPage);
-
-
-        // Simple counter animation for stats
+         // Simple counter animation for stats
         document.addEventListener('DOMContentLoaded', function() {
             const counters = document.querySelectorAll('.stats-counter');
             const observer = new IntersectionObserver((entries) => {

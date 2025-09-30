@@ -30,7 +30,7 @@ requireRole('buyer');
       max-height: 1200px;
       opacity: 1;
       padding: 1rem 0;
-    }
+    } 
     thead th {
       height: 60px;
       vertical-align: middle;
@@ -41,29 +41,72 @@ requireRole('buyer');
 
 <div class="max-w-7xl mx-auto">
   <!-- Table -->
-  <div class="overflow-x-auto rounded-lg border border-gray-200">
-    <table class="w-full text-xs sm:text-sm text-gray-800 text-center">
-      <thead class="bg-gradient-to-r from-blue-600 to-green-500 text-white uppercase tracking-wider sticky top-0 z-50 shadow">
-        <tr>
-          <th class="px-3 py-3">Niche</th>
-          <th class="px-3 py-3">Site</th>
-          <th class="px-3 py-3">Price</th>
-          <th class="px-3 py-3">DR</th>
-          <th class="px-3 py-3">Traffic</th>
-          <th class="px-3 py-3">Backlinks</th>
-          <th class="px-3 py-3">Country</th>
-          <th class="px-3 py-3">Action</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody" class="bg-white divide-y divide-gray-200"></tbody>
-    </table>
-  </div>
+  <div class="overflow-x-auto rounded-lg border border-gray-200 max-h-[800px] overflow-y-auto">
+  <table class="w-full text-xs sm:text-sm text-gray-800 text-center">
+    <thead class="bg-gradient-to-r from-blue-600 to-green-500 text-white uppercase tracking-wider sticky top-0 z-50 shadow">
+      <tr>
+        <th class="px-3 py-3">Niche</th>
+        <th class="px-3 py-3">Site</th>
+        <th class="px-3 py-3">Country</th>
+        <th class="px-3 py-3">DR</th>
+        <th class="px-3 py-3">Traffic</th>
+        <th class="px-3 py-3">Backlinks</th>
+        <th class="px-3 py-3">Price</th>
+        <th class="px-3 py-3">Action</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody" class="bg-white divide-y divide-gray-200"></tbody>
+  </table>
+</div>
+
 
   <!-- Pagination -->
   <div id="pagination" class="flex justify-center mt-4 space-x-1 text-sm"></div>
 </div>
 
 <script>  
+document.addEventListener("click", async function(e) {
+  if (e.target.classList.contains("buy-now")) {
+    e.preventDefault();
+
+    const btn = e.target;
+    const siteId = btn.getAttribute("data-site-id");
+
+    try {
+      const res = await fetch("/linkbuildings/cart/add_to_cart.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "site_id=" + siteId
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        // update cart count
+        document.getElementById("cart-count").innerText = data.cart_count;
+
+        // change button text to "Added!"
+        btn.innerText = "✅ Added";
+        btn.classList.remove("bg-green-600", "hover:bg-green-700");
+        btn.classList.add("bg-gray-500", "cursor-not-allowed");
+
+        // reset back to original after 2s
+        setTimeout(() => {
+          btn.innerText = "Buy Now";
+          btn.classList.add("bg-green-600", "hover:bg-green-700");
+          btn.classList.remove("bg-gray-500", "cursor-not-allowed");
+        }, 2000);
+      }
+    } catch (err) {
+      console.error("Error:", err);
+    }
+  }
+});
+
+
+
+
+
 // Country mapping to ISO 2-letter codes
 const countryCodes = {
   "Germany": "de","Spain": "es","Italy": "it","Austria": "at","Sweden": "se",
@@ -93,10 +136,6 @@ async function loadSites(page = 1) {
           ${niches.length > 6 ? `<a href="#" class="toggle-niches text-blue-600 text-xs ml-2">View More</a>` : ""}
         </td>
         <td class="px-2 py-3 font-semibold">${site.site_name}</td>
-        <td class="px-2 py-3 font-bold">€${site.price}</td>
-        <td class="px-2 py-3 font-bold">${site.dr}</td>
-        <td class="px-2 py-3">${Number(site.traffic).toLocaleString()}</td>
-        <td class="px-2 py-3">${site.backlinks}</td>
         <td class="px-2 py-3">
           <div class="flex flex-col items-center">
             <img src="https://flagcdn.com/24x18/${countryCodes[site.country] || site.country.toLowerCase()}.png" 
@@ -104,8 +143,17 @@ async function loadSites(page = 1) {
             <span class="text-xs">${site.country}</span>
           </div>
         </td>
+        <td class="px-2 py-3 font-bold">${site.dr}</td>
+        <td class="px-2 py-3">${Number(site.traffic).toLocaleString()}</td>
+        <td class="px-2 py-3">${site.backlinks}</td>
+        <td class="px-2 py-3 font-bold">€${site.price}</td>
         <td class="px-2 py-3">
-          <button class="bg-blue-600 text-white px-2 py-1 text-xs rounded hover:bg-blue-700">Buy Now</button>
+          <button 
+  class="buy-now bg-green-600 text-white px-3 py-1 text-xs rounded hover:bg-green-700"
+  data-site-id="${site.id}">
+  Buy Now
+</button>
+
         </td>
       `;
 

@@ -45,7 +45,7 @@ $userRole  = $_SESSION['user_role']  ?? 'buyer'; // default is buyer
 
 /**
  * Restrict access to certain roles.
- *
+ *  
  * @param string|array $roles Allowed role(s)
  */
 function requireRole($roles) {
