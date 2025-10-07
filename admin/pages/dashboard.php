@@ -14,10 +14,10 @@ $totalUsers = $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
     <p class="text-gray-500">Quick snapshot of your platform.</p>
 </div>
 
-<!-- KPI Cards -->
+<!-- Cards -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
 
-    <!-- Total Sites -->
+    <!-- Total Sites -->    
     <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center">
             <div class="p-3 rounded-full bg-blue-100 text-blue-600">

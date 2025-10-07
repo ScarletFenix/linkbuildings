@@ -8,5 +8,5 @@ if (isset($_SESSION['cart'][$siteId])) {
 }
 
 // Go back to cart
-header("Location: /linkbuildings/cart/cart.php");
+header("Location: /linkbuildings/dashboard.php");
 exit;

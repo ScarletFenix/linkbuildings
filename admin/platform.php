@@ -4,9 +4,6 @@ require_once __DIR__ . '/../includes/auth.php';
 // Only allow admin users
 requireRole('admin');
 
-
-
-
 // Default page is dashboard if not specified
 $page = $_GET['page'] ?? 'dashboard';
 $file = __DIR__ . "/pages/{$page}.php";
@@ -22,6 +19,8 @@ if (isset($_GET['ajax'])) {
     exit;
 }
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -183,12 +182,11 @@ if (isset($_GET['ajax'])) {
     $(`[data-page="${currentPage}"]`).addClass("active");
   });
   </script>
-  
-<!-- Example if your file is in /secondfolder/myscript.js -->
+
+<!-- Table Scripts -->
 <script src="assets/js/tables.js"></script>
 
 
 
-
 </body>
-</html>
+</html> 

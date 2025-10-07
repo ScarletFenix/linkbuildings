@@ -179,163 +179,72 @@ $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($userName) . "&back
         <p class="text-gray-600">Here's your link building dashboard with all the tools you need for SEO success.</p>
       </div>
 
-      <!-- Quick Stats -->
-      <!-- <div class="quick-stats mb-8">
-        <div class="stat-card bg-white p-6 rounded-xl border-l-4 border-blue-500">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-500 text-sm font-medium">Active Campaigns</p>
-              <p class="text-2xl font-bold text-gray-900 mt-1">3</p>
-            </div>
-            <div class="feature-icon bg-blue-100 text-blue-600">
-              <i data-lucide="trending-up" class="w-6 h-6"></i>
-            </div>
-          </div>
-        </div>
-
-        <div class="stat-card bg-white p-6 rounded-xl border-l-4 border-green-500">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-500 text-sm font-medium">Links Purchased</p>
-              <p class="text-2xl font-bold text-gray-900 mt-1">12</p>
-            </div>
-            <div class="feature-icon bg-green-100 text-green-600">
-              <i data-lucide="link" class="w-6 h-6"></i>
-            </div>
-          </div>
-        </div>
-
-        <div class="stat-card bg-white p-6 rounded-xl border-l-4 border-purple-500">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-500 text-sm font-medium">Total Spent</p>
-              <p class="text-2xl font-bold text-gray-900 mt-1">$2,450</p>
-            </div>
-            <div class="feature-icon bg-purple-100 text-purple-600">
-              <i data-lucide="dollar-sign" class="w-6 h-6"></i>
-            </div>
-          </div>
-        </div>
-
-        <div class="stat-card bg-white p-6 rounded-xl border-l-4 border-orange-500">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-500 text-sm font-medium">Avg. Domain Rating</p>
-              <p class="text-2xl font-bold text-gray-900 mt-1">74</p>
-            </div>
-            <div class="feature-icon bg-orange-100 text-orange-600">
-              <i data-lucide="star" class="w-6 h-6"></i>
-            </div>
-          </div>
-        </div>
-      </div> -->
-
+      
       <!-- Main Content Grid -->
-      <div class="grid lg:grid-cols-3 gap-8">
-        <!-- Left Column: Platform Info -->
-        <div class="lg:col-span-2">
-          <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
-            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
-              <i data-lucide="zap" class="w-5 h-5 text-blue-600 mr-2"></i>
-              Premium Link Building Platform
-            </h2>
-            <p class="text-gray-700 mb-6 leading-relaxed">
-              Our platform offers a curated selection of high-quality domains with verified metrics, 
-              ensuring you get maximum authority, relevance, and long-term SEO impact.
-            </p>
+<div class="grid lg:grid-cols-1 gap-8">
+  <!-- Centered Column: Platform Info -->
+<div class="lg:col-span-1 flex">
+  <div class="bg-white rounded-xl shadow-sm p-6 mb-8 flex-1">
+    <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center justify-center">
+      <i data-lucide="zap" class="w-5 h-5 text-blue-600 mr-2"></i>
+      Premium Link Building Platform
+    </h2>
+    <p class="text-gray-700 mb-6 leading-relaxed text-center">
+      Our platform offers a curated selection of high-quality domains with verified metrics, 
+      ensuring you get maximum authority, relevance, and long-term SEO impact.
+    </p>
 
-            <div class="grid md:grid-cols-2 gap-6">
-              <div class="flex items-start space-x-3">
-                <div class="feature-icon bg-blue-50 text-blue-600">
-                  <i data-lucide="eye" class="w-5 h-5"></i>
-                </div>
-                <div>
-                  <h3 class="font-semibold text-gray-900 mb-1">Transparent Pricing</h3>
-                  <p class="text-gray-600 text-sm">Competitive rates with clear value per link</p>
-                </div>
-              </div>
-
-              <div class="flex items-start space-x-3">
-                <div class="feature-icon bg-green-50 text-green-600">
-                  <i data-lucide="shield-check" class="w-5 h-5"></i>
-                </div>
-                <div>
-                  <h3 class="font-semibold text-gray-900 mb-1">Verified Metrics</h3>
-                  <p class="text-gray-600 text-sm">Real traffic, strong domain ratings, and organic growth</p>
-                </div>
-              </div>
-
-              <div class="flex items-start space-x-3">
-                <div class="feature-icon bg-purple-50 text-purple-600">
-                  <i data-lucide="filter" class="w-5 h-5"></i>
-                </div>
-                <div>
-                  <h3 class="font-semibold text-gray-900 mb-1">Advanced Filtering</h3>
-                  <p class="text-gray-600 text-sm">Find the perfect site with advanced search tools</p>
-                </div>
-              </div>
-
-              <div class="flex items-start space-x-3">
-                <div class="feature-icon bg-orange-50 text-orange-600">
-                  <i data-lucide="lock" class="w-5 h-5"></i>
-                </div>
-                <div>
-                  <h3 class="font-semibold text-gray-900 mb-1">Secure Transactions</h3>
-                  <p class="text-gray-600 text-sm">Trusted marketplace with smooth and safe purchases</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <p class="text-blue-800 text-sm">
-                <span class="font-semibold">Pro Tip:</span> Use the advanced filters to find domains that match your niche and budget requirements for maximum ROI.
-              </p>
-            </div>
-          </div>
+    <div class="grid md:grid-cols-2 gap-6">
+      <div class="flex items-start space-x-3">
+        <div class="feature-icon bg-blue-50 text-blue-600">
+          <i data-lucide="eye" class="w-5 h-5"></i>
         </div>
-
-        <!-- Right Column: Partner Program -->
-        <div class="partner-card p-6 rounded-xl">
-          <div class="flex items-center mb-4">  
-            <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center mr-3">
-              <i data-lucide="award" class="w-5 h-5 text-white"></i>
-            </div>
-            <h2 class="text-xl font-bold text-white">Volume Discount Program</h2>
-          </div>
-          
-          <p class="text-blue-100 mb-6">
-            Get rewarded for scaling your link-building efforts! Our partner program 
-            helps you save more as you grow your SEO campaigns.
-          </p>
-
-          <div class="space-y-3 mb-6">
-            <div class="flex justify-between items-center p-3 bg-white/10 rounded-lg">
-              <span class="text-white font-medium">5+ links</span>
-              <span class="bg-white text-blue-600 px-2 py-1 rounded text-sm font-bold">5% OFF</span>
-            </div>
-            <div class="flex justify-between items-center p-3 bg-white/10 rounded-lg">
-              <span class="text-white font-medium">10+ links</span>
-              <span class="bg-white text-blue-600 px-2 py-1 rounded text-sm font-bold">10% OFF</span>
-            </div>
-            <div class="flex justify-between items-center p-3 bg-white/10 rounded-lg">
-              <span class="text-white font-medium">15+ links</span>
-              <span class="bg-white text-blue-600 px-2 py-1 rounded text-sm font-bold">15% OFF</span>
-            </div>
-            <div class="flex justify-between items-center p-3 bg-white/10 rounded-lg">
-              <span class="text-white font-medium">20+ links</span>
-              <span class="bg-white text-blue-600 px-2 py-1 rounded text-sm font-bold">20% OFF</span>
-            </div>
-            <div class="flex justify-between items-center p-3 bg-white/10 rounded-lg">
-              <span class="text-white font-medium">25+ links</span>
-              <span class="bg-white text-blue-600 px-2 py-1 rounded text-sm font-bold">25% OFF</span>
-            </div>
-          </div>
-
-          <p class="text-white text-xs italic text-center">
-          *Discounts apply automatically at checkout based on your purchase volume.*
-          </p>
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-1">Transparent Pricing</h3>
+          <p class="text-gray-600 text-sm">Competitive rates with clear value per link</p>
         </div>
       </div>
+
+      <div class="flex items-start space-x-3">
+        <div class="feature-icon bg-green-50 text-green-600">
+          <i data-lucide="shield-check" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-1">Verified Metrics</h3>
+          <p class="text-gray-600 text-sm">Real traffic, strong domain ratings, and organic growth</p>
+        </div>
+      </div>
+
+      <div class="flex items-start space-x-3">
+        <div class="feature-icon bg-purple-50 text-purple-600">
+          <i data-lucide="filter" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-1">Advanced Filtering</h3>
+          <p class="text-gray-600 text-sm">Find the perfect site with advanced search tools</p>
+        </div>
+      </div>
+
+      <div class="flex items-start space-x-3">
+        <div class="feature-icon bg-orange-50 text-orange-600">
+          <i data-lucide="lock" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-1">Secure Transactions</h3>
+          <p class="text-gray-600 text-sm">Trusted marketplace with smooth and safe purchases</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200 text-center">
+      <p class="text-blue-800 text-sm">
+        <span class="font-semibold">Pro Tip:</span> Use the advanced filters to find domains that match your niche and budget requirements for maximum ROI.
+      </p>
+    </div>
+  </div>
+</div>
+
+</div>
     </div>
   </section>
 

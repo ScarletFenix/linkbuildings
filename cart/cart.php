@@ -53,7 +53,7 @@ foreach ($cart as $item) {
                 </td>
                 <td class="px-4 py-2">€<?= number_format($item['price'], 2) ?></td>
                 <td class="px-4 py-2">
-                  <a href="/linkbuildings/cart/remove.php?site_id=<?= $id ?>" 
+                  <a href="/linkbuildings/cart/remove.php?site_id=<?= $id ?>"  
                      class="text-red-600 hover:underline">Remove</a>
                 </td>
               </tr>

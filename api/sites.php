@@ -19,9 +19,25 @@ try {
     $totalRows = (int) $countStmt->fetchColumn();
     $totalPages = ceil($totalRows / $limit);
 
-    // Fetch active sites
+    // ✅ Fetch active sites + discount info
     $stmt = $pdo->prepare("
-        SELECT id, site_name, description, site_img, niche, site_url, price, dr, traffic, country, backlinks, status, created_at
+        SELECT 
+            id,
+            site_name,
+            description,
+            site_img,
+            niche,
+            site_url,
+            price,
+            dr,
+            traffic,
+            country,
+            backlinks,
+            status,
+            created_at,
+            has_discount,
+            discount_start,
+            discount_end
         FROM sites
         WHERE status = 'active'
         ORDER BY created_at DESC
@@ -33,7 +49,7 @@ try {
 
     $sites = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Process image paths
+    // Process image paths & discount logic
     foreach ($sites as &$site) {
         $filePath = __DIR__ . '/../uploads/sites/' . $site['site_img'];
         $publicPath = '/linkbuildings/uploads/sites/' . $site['site_img'];
@@ -41,8 +57,16 @@ try {
         if (!empty($site['site_img']) && file_exists($filePath)) {
             $site['site_img_url'] = $publicPath;
         } else {
-            // fallback if missing
             $site['site_img_url'] = '/linkbuildings/assets/images/placeholder.png';
+        }
+
+        // ✅ Convert discount status for convenience
+        $site['is_discount_active'] = false;
+        if ($site['has_discount'] == 1 && !empty($site['discount_start']) && !empty($site['discount_end'])) {
+            $now = new DateTime();
+            $start = new DateTime($site['discount_start']);
+            $end = new DateTime($site['discount_end']);
+            $site['is_discount_active'] = ($now >= $start && $now <= $end);
         }
     }
 
