@@ -274,7 +274,7 @@ $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($userName) . "&back
 
   <!-- Cart Sidebar -->
 <div id="cart-sidebar" 
-     class="fixed top-0 right-0 w-[600px] h-full bg-white shadow-lg transform translate-x-full transition-transform duration-300 z-50">
+     class="fixed top-0 right-0 w-[900px] h-full bg-white shadow-lg transform translate-x-full transition-transform duration-300 z-50">
   <div class="flex justify-between items-center p-4 border-b">
     <h2 class="text-lg font-bold">Your Cart</h2>
     <button id="close-cart" class="text-gray-500 hover:text-gray-800">✖</button>

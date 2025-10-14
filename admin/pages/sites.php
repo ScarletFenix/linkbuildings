@@ -106,6 +106,11 @@ $nichesList = [
           <label class="block text-sm font-medium">Discount End</label>
           <input type="datetime-local" name="discount_end" class="w-full border rounded p-2">
         </div>
+        <div>
+          <label class="block text-sm font-medium">Discount Percentage</label>
+          <!-- ✅ FIXED name -->
+          <input type="number" name="discount_percent" min="1" max="100" class="w-full border rounded p-2">
+        </div>
       </div>
     </div>
 
@@ -187,6 +192,11 @@ $nichesList = [
             <label class="block text-sm font-medium">Discount End</label>
             <input type="datetime-local" name="discount_end" class="w-full border rounded p-2">
           </div>
+          <div>
+            <label class="block text-sm font-medium">Discount Percentage</label>
+            <!-- ✅ FIXED name -->
+            <input type="number" name="discount_percent" min="1" max="100" class="w-full border rounded p-2">
+          </div>
         </div>
       </div>
 
@@ -210,13 +220,11 @@ $nichesList = [
 <!-- End Edit Modal -->
 
 <script>
-// ========== Niche Selector ==========
 const niches = <?= json_encode($nichesList) ?>;
 const nicheInput = document.getElementById('nicheSearch');
 const nicheOptions = document.getElementById('nicheOptions');
 const selectedNichesDiv = document.getElementById('selectedNiches');
 const hiddenInput = document.getElementById('nicheHidden');
-
 let selectedNiches = [];
 
 function renderOptions() {
@@ -256,7 +264,6 @@ document.addEventListener('click', e => {
   if (!e.target.closest('#nicheSelect')) nicheOptions.classList.add('hidden');
 });
 
-// ========== Discount Toggles ==========
 const hasDiscountCheckbox = document.getElementById('has_discount');
 const discountFields = document.getElementById('discountFields');
 hasDiscountCheckbox.addEventListener('change', function() {
@@ -269,7 +276,6 @@ editHasDiscount.addEventListener('change', function() {
   editDiscountFields.classList.toggle('hidden', !this.checked);
 });
 
-// ✅ FIX: When opening edit modal, automatically show discount time fields if checked
 document.addEventListener('DOMContentLoaded', () => {
   const observer = new MutationObserver(() => {
     if (!document.getElementById('editModal').classList.contains('hidden')) {
@@ -281,7 +287,6 @@ document.addEventListener('DOMContentLoaded', () => {
   observer.observe(document.getElementById('editModal'), { attributes: true, attributeFilter: ['class'] });
 });
 
-// ========== AJAX Form ==========
 document.getElementById("siteForm").addEventListener("submit", function(e) {
   e.preventDefault();
   const formData = new FormData(this);

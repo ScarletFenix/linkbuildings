@@ -25,6 +25,7 @@ $backlinks       = $_POST['backlinks'] ?? '';
 $hasDiscount     = isset($_POST['has_discount']) ? 1 : 0;
 $discountStart   = trim($_POST['discount_start'] ?? '');
 $discountEnd     = trim($_POST['discount_end'] ?? '');
+$discountPercent = trim($_POST['discount_percent'] ?? ''); // ✅ added
 
 $errors = [];
 
@@ -54,6 +55,13 @@ if ($hasDiscount) {
             $errors['discount_time'] = "Discount end time must be after start time";
         }
     }
+
+    // ✅ discount percent validation
+    if ($discountPercent === '' || !is_numeric($discountPercent) || $discountPercent < 0 || $discountPercent > 100) {
+        $errors['discount_percent'] = "Discount percent must be a number between 0 and 100";
+    }
+} else {
+    $discountPercent = null;
 }
 
 // Handle upload
@@ -81,9 +89,9 @@ if (!empty($_FILES['site_img']['tmp_name']) && is_uploaded_file($_FILES['site_im
 
 // Save to DB
 if (empty($errors)) {
-    $stmt = $pdo->prepare("INSERT INTO sites 
-        (site_name, description, niche, site_url, price, dr, traffic, country, backlinks, status, site_img, has_discount, discount_start, discount_end) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO sites    
+        (site_name, description, niche, site_url, price, dr, traffic, country, backlinks, status, site_img, has_discount, discount_start, discount_end, discount_percent) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', ?, ?, ?, ?, ?)");
 
     $stmt->execute([
         $siteName,
@@ -98,7 +106,8 @@ if (empty($errors)) {
         $imgName,
         $hasDiscount,
         $discountStart ?: null,
-        $discountEnd ?: null
+        $discountEnd ?: null,
+        $discountPercent // ✅ added
     ]);
 
     $response['success'] = true;

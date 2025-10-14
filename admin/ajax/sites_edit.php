@@ -13,20 +13,27 @@ if ($id <= 0) {
 }
 
 $fields = [
-    'site_name'     => $_POST['site_name'] ?? '',
-    'description'   => $_POST['description'] ?? '',
-    'niche'         => $_POST['niche'] ?? '',
-    'site_url'      => $_POST['site_url'] ?? '',
-    'price'         => $_POST['price'] ?? 0,
-    'dr'            => $_POST['dr'] ?? 0,
-    'traffic'       => $_POST['traffic'] ?? 0,
-    'country'       => $_POST['country'] ?? '',
-    'backlinks'     => $_POST['backlinks'] ?? 0,
-    // ✅ Discount toggle and time
-    'has_discount'  => isset($_POST['has_discount']) ? 1 : 0,
-    'discount_start'=> $_POST['discount_start'] ?? null,
-    'discount_end'  => $_POST['discount_end'] ?? null,
+    'site_name'       => $_POST['site_name'] ?? '',
+    'description'     => $_POST['description'] ?? '',
+    'niche'           => $_POST['niche'] ?? '',
+    'site_url'        => $_POST['site_url'] ?? '',
+    'price'           => $_POST['price'] ?? 0,
+    'dr'              => $_POST['dr'] ?? 0,
+    'traffic'         => $_POST['traffic'] ?? 0,
+    'country'         => $_POST['country'] ?? '',
+    'backlinks'       => $_POST['backlinks'] ?? 0,
+    // ✅ Discount fields
+    'has_discount'    => isset($_POST['has_discount']) ? 1 : 0,
+    'discount_start'  => $_POST['discount_start'] ?? null,
+    'discount_end'    => $_POST['discount_end'] ?? null,
 ];
+
+// ✅ Only add discount_percent if provided in POST
+if (isset($_POST['discount_percent'])) {
+    $fields['discount_percent'] = $_POST['discount_percent'] === '' 
+        ? null 
+        : (float)$_POST['discount_percent'];
+}
 
 // Handle optional image upload
 if (!empty($_FILES['site_img']['name'])) {

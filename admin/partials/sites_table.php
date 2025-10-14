@@ -123,20 +123,38 @@ $no = $offset + 1;
                     <td class="p-2 border"><?= htmlspecialchars($site['backlinks']) ?></td>
 
                     <!-- Discount column -->
-                    <td class="p-2 border text-center">
-                        <div class="discount-status" data-end="<?= htmlspecialchars($countdown) ?>" data-status="<?= $discountStatus ?>">
-                            <?php if ($discountStatus === 'Active'): ?>
-                                <span class="status-label text-green-700 bg-green-100 px-2 py-1 rounded-full text-xs"><?= $discountStatus ?></span>
-                                <div class="countdown font-bold text-red-600 text-xs mt-1"></div>
-                            <?php elseif ($discountStatus === 'Upcoming'): ?>
-                                <span class="status-label text-yellow-700 bg-yellow-100 px-2 py-1 rounded-full text-xs"><?= $discountStatus ?></span>
-                            <?php elseif ($discountStatus === 'Expired'): ?>
-                                <span class="status-label text-red-700 bg-red-100 px-2 py-1 rounded-full text-xs"><?= $discountStatus ?></span>
-                            <?php else: ?>
-                                <span class="text-gray-500 text-xs">—</span>
-                            <?php endif; ?>
-                        </div>
-                    </td>
+<td class="p-2 border text-center">
+    <?php
+        $discountValue = !empty($site['discount_percent'])
+            ? rtrim(rtrim(number_format($site['discount_percent'], 2, '.', ''), '0'), '.')
+            : '0';
+    ?>
+    <div class="discount-status"
+         data-end="<?= htmlspecialchars($site['discount_end'] ?? '') ?>"
+         data-start="<?= htmlspecialchars($site['discount_start'] ?? '') ?>"
+         data-status="<?= $discountStatus ?>">
+
+        <?php if ($discountStatus === 'Active'): ?>
+            <span class="status-label text-green-800 bg-green-50 border border-green-200 px-2 py-1 rounded-md text-xs font-semibold">
+                <?= $discountValue ?>%
+            </span>
+            <div class="countdown font-bold text-red-600 text-xs mt-1"></div>
+
+        <?php elseif ($discountStatus === 'Upcoming'): ?>
+            <span class="status-label text-yellow-700 bg-yellow-100 px-2 py-1 rounded-full text-xs"><?= $discountStatus ?></span>
+            <div class="countdown font-semibold text-gray-600 text-xs mt-1">Starts soon</div>
+
+        <?php elseif ($discountStatus === 'Expired'): ?>
+            <span class="status-label text-red-700 bg-red-100 px-2 py-1 rounded-full text-xs"><?= $discountStatus ?></span>
+            <div class="countdown font-semibold text-gray-500 text-xs mt-1">Ended</div>
+
+        <?php else: ?>
+            <span class="text-gray-500 text-xs">—</span>
+        <?php endif; ?>
+    </div>
+</td>
+
+
 
                     <td class="p-2 border text-center">
                         <span class="<?= $site['status']=='active' ? 'text-green-700 bg-green-100' : 'text-red-700 bg-red-100' ?> px-2 py-1 rounded-full text-xs">
@@ -161,6 +179,8 @@ $no = $offset + 1;
                                 data-has_discount="<?= $site['has_discount'] ?>"
                                 data-discount_start="<?= $site['discount_start'] ?>"
                                 data-discount_end="<?= $site['discount_end'] ?>"
+                                data-discount_percent="<?= htmlspecialchars($site['discount_percent'], ENT_QUOTES) ?>"
+                                
                             >Edit</button>
                             <button class="deleteBtn bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700" data-id="<?= $site['id'] ?>">Delete</button>
                         </div>
@@ -201,34 +221,60 @@ $no = $offset + 1;
 <script>
 // Countdown timer — auto-switch to "Expired"
 document.querySelectorAll('.discount-status').forEach(wrapper => {
-    const end = wrapper.dataset.end ? new Date(wrapper.dataset.end).getTime() : null;
+    const status = wrapper.dataset.status;
+    const endRaw = wrapper.dataset.end;
+    const startRaw = wrapper.dataset.start;
     const countdownEl = wrapper.querySelector('.countdown');
     const label = wrapper.querySelector('.status-label');
 
-    if (!end || !countdownEl || !label) return;
+    if (!endRaw || !countdownEl || !label) return;
 
-    const tick = () => {
-        const now = new Date().getTime();
-        const diff = end - now;
+    function parseLocal(str) {
+        if (!str) return null;
+        const parts = str.split(/[- :]/);
+        if (parts.length < 6) return null;
+        return new Date(
+            parts[0], parts[1] - 1, parts[2],
+            parts[3], parts[4], parts[5]
+        );
+    }
 
-        if (diff <= 0) {
+    const start = parseLocal(startRaw);
+    const end = parseLocal(endRaw);
+    if (!end) return;
+
+    const interval = setInterval(() => {
+        const now = new Date();
+
+        if (start && now < start) {
+            countdownEl.textContent = 'Starts in ' + timeDiff(start - now);
+            label.textContent = 'Upcoming';
+            label.className = 'status-label text-yellow-700 bg-yellow-100 px-2 py-1 rounded-full text-xs';
+            return;
+        }
+
+        if (now >= end) {
             label.textContent = 'Expired';
             label.className = 'status-label text-red-700 bg-red-100 px-2 py-1 rounded-full text-xs';
-            countdownEl.textContent = 'Expired';
-            countdownEl.className = 'countdown font-bold text-red-600 text-xs mt-1';
+            countdownEl.textContent = 'Ended';
             clearInterval(interval);
             return;
         }
 
-        const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
-        const minutes = Math.floor((diff % (1000*60*60)) / (1000*60));
-        const seconds = Math.floor((diff % (1000*60)) / 1000);
-        countdownEl.textContent = `${hours}h ${minutes}m ${seconds}s`;
-    };
+        countdownEl.textContent = timeDiff(end - now);
+    }, 1000);
 
-    tick();
-    const interval = setInterval(tick, 1000);
+    function timeDiff(ms) {
+        const totalSeconds = Math.floor(ms / 1000);
+        const days = Math.floor(totalSeconds / (3600 * 24));
+        const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        return `${days > 0 ? days + 'd ' : ''}${hours}h ${minutes}m ${seconds}s`;
+    }
 });
+
 
 // existing edit button logic unchanged
 document.querySelectorAll('.editBtn').forEach(btn => {
@@ -254,10 +300,18 @@ document.querySelectorAll('.editBtn').forEach(btn => {
         } else {
             form.discount_start.value = '';
         }
+
         if (btn.dataset.discount_end) {
             form.discount_end.value = btn.dataset.discount_end.replace(' ', 'T').slice(0, 16);
         } else {
             form.discount_end.value = '';
+        }
+
+        // ✅ Prefill discount_percent
+        if (btn.dataset.discount_percent) {
+            form.discount_percent.value = btn.dataset.discount_percent;
+        } else {
+            form.discount_percent.value = '';
         }
 
         const previewImg = document.getElementById('editPreviewImg');
@@ -268,6 +322,7 @@ document.querySelectorAll('.editBtn').forEach(btn => {
     });
 });
 
+
 document.getElementById('edit_has_discount').addEventListener('change', function() {
     document.getElementById('edit_discount_fields').classList.toggle('hidden', !this.checked);
 });
@@ -276,3 +331,4 @@ document.getElementById('closeEditModal').addEventListener('click', () => {
     document.getElementById('editModal').classList.add('hidden');
 });
 </script>
+

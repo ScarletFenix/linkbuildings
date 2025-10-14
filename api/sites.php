@@ -37,7 +37,8 @@ try {
             created_at,
             has_discount,
             discount_start,
-            discount_end
+            discount_end,
+            discount_percent  -- ✅ Added this line
         FROM sites
         WHERE status = 'active'
         ORDER BY created_at DESC
@@ -68,6 +69,11 @@ try {
             $end = new DateTime($site['discount_end']);
             $site['is_discount_active'] = ($now >= $start && $now <= $end);
         }
+
+        // ✅ Sanitize discount_percent (ensure it's numeric)
+        $site['discount_percent'] = isset($site['discount_percent']) 
+            ? (float)$site['discount_percent'] 
+            : null;
     }
 
     // Respond JSON

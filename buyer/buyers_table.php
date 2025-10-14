@@ -18,7 +18,7 @@ requireRole('buyer');
       margin: 3px;
       border-radius: 9999px;
       font-size: 0.75rem;
-      font-weight: 500;
+      font-weight: 600;
     }
     .expandable {
       max-height: 0;
@@ -140,13 +140,26 @@ async function loadSites(page = 1) {
             </div>
           `;
         } else if (now >= startTime && now < endTime) {
-          // Active
-          discountHTML = `
-            <div class="flex flex-col items-center">
-              <span class="text-green-600 font-semibold">Active</span>
-              <span id="${timerId}" class="text-sm font-bold text-red-600"></span>
-            </div>
-          `;
+          // ✅ Active → show discount percent instead of “Active”
+          const percent = site.discount_percent && site.discount_percent != 0
+            ? parseFloat(site.discount_percent).toString().replace(/\.0+$/, "")
+            : null;
+
+          if (percent) {
+            discountHTML = `
+              <div class="flex flex-col items-center">
+                <span class="bg-green-100 text-green-700 font-semibold px-2 py-0.5 rounded-md text-xs">${percent}% OFF</span>
+                <span id="${timerId}" class="text-xs font-bold text-red-600 mt-1"></span>
+              </div>
+            `;
+          } else {
+            discountHTML = `
+              <div class="flex flex-col items-center">
+                <span class="bg-green-100 text-green-700 font-semibold px-2 py-0.5 rounded-md text-xs">Active</span>
+                <span id="${timerId}" class="text-xs font-bold text-red-600 mt-1"></span>
+              </div>
+            `;
+          }
           setTimeout(() => startCountdown(site.discount_end, timerId), 100);
         } else {
           // Expired
@@ -328,4 +341,3 @@ loadSites();
 </script>
 </body>
 </html>
-  

@@ -373,15 +373,6 @@ if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin') {
 Our methodology leverages data from leading SEO platforms, ensuring measurable improvements in rankings and ROI.
                     </p>
                     
-                    <!-- <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start fade-in-up stagger-delay-4">
-                        <a href="#contact" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold px-8 py-4 rounded-lg transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-xl">
-                            Start Your Campaign
-                        </a>
-                        <a href="#sites-showcase" class="border border-blue-400 text-blue-300 hover:bg-blue-400/10 font-semibold px-8 py-4 rounded-lg transition-all duration-300">
-                            View Our Portfolio
-                        </a>
-                    </div> -->
-                    
                     <!-- Trust Indicators -->
                     <div class="mt-12 flex flex-wrap items-center justify-center lg:justify-start gap-8 text-blue-200 fade-in-up stagger-delay-5">
                         <div class="flex items-center">
