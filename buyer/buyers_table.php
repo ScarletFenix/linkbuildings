@@ -210,7 +210,8 @@ async function loadSites(page = 1) {
             </div>
             <div class="grid grid-cols-3 gap-4 text-center mb-6">
               <div class="p-4 bg-white shadow rounded-lg">
-                <div class="text-sm font-bold text-gray-600">DR</div>
+                <div class="text-sm font-bold text-gray-600">DR
+                </div>
                 <div class="text-2xl font-semibold text-blue-600">${site.dr}</div>
               </div>
               <div class="p-4 bg-white shadow rounded-lg">

@@ -108,12 +108,19 @@ $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($userName) . "&back
 
   <!-- Right: Cart + User Menu -->
   <div class="flex items-center space-x-6">
+    <!-- Cart -->
     <a href="#" id="open-cart"
-   class="flex items-center space-x-1 text-gray-700 font-medium hover:text-blue-600 transition">
-  <span>🛒</span>
-  <span>Cart (<span id="cart-count"><?= isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0 ?></span>)</span>
-</a>
+       class="flex items-center space-x-1 text-gray-700 font-medium hover:text-blue-600 transition">
+      <span>🛒</span>
+      <span>Cart (<span id="cart-count"><?= isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0 ?></span>)</span>
+    </a>
 
+    <!-- My Orders -->
+    <a href="./orders.php" id="open-orders"
+       class="flex items-center space-x-1 text-gray-700 font-medium hover:text-green-600 transition">
+      <span>📦</span>
+      <span>My Orders (<span id="order-count"><?= isset($_SESSION['orders']) ? count($_SESSION['orders']) : 0 ?></span>)</span>
+    </a>
 
     <!-- User Menu -->
     <div class="relative" x-data="{ open: false }">
@@ -168,6 +175,7 @@ $avatarUrl = "https://ui-avatars.com/api/?name=" . urlencode($userName) . "&back
     </div>
   </div>
 </nav>
+
 
 
   <!-- Dashboard Header -->
