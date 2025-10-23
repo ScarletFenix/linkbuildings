@@ -13,27 +13,16 @@ if ($id <= 0) {
 }
 
 $fields = [
-    'site_name'       => $_POST['site_name'] ?? '',
-    'description'     => $_POST['description'] ?? '',
-    'niche'           => $_POST['niche'] ?? '',
-    'site_url'        => $_POST['site_url'] ?? '',
-    'price'           => $_POST['price'] ?? 0,
-    'dr'              => $_POST['dr'] ?? 0,
-    'traffic'         => $_POST['traffic'] ?? 0,
-    'country'         => $_POST['country'] ?? '',
-    'backlinks'       => $_POST['backlinks'] ?? 0,
-    // ✅ Discount fields
-    'has_discount'    => isset($_POST['has_discount']) ? 1 : 0,
-    'discount_start'  => $_POST['discount_start'] ?? null,
-    'discount_end'    => $_POST['discount_end'] ?? null,
+    'site_name'   => $_POST['site_name'] ?? '',
+    'description' => $_POST['description'] ?? '',
+    'niche'       => $_POST['niche'] ?? '',
+    'site_url'    => $_POST['site_url'] ?? '',
+    'price'       => $_POST['price'] ?? 0,
+    'dr'          => $_POST['dr'] ?? 0,
+    'traffic'     => $_POST['traffic'] ?? 0,
+    'country'     => $_POST['country'] ?? '',
+    'backlinks'   => $_POST['backlinks'] ?? 0,
 ];
-
-// ✅ Only add discount_percent if provided in POST
-if (isset($_POST['discount_percent'])) {
-    $fields['discount_percent'] = $_POST['discount_percent'] === '' 
-        ? null 
-        : (float)$_POST['discount_percent'];
-}
 
 // Handle optional image upload
 if (!empty($_FILES['site_img']['name'])) {
@@ -56,7 +45,7 @@ $fields['id'] = $id;
 
 try {
     $stmt->execute($fields);
-    echo json_encode(["success" => true, "message" => "Site updated successfully"]);
+    echo json_encode(["success" => true, "message" => "✅ Site updated successfully"]);
 } catch (Exception $e) {
-    echo json_encode(["success" => false, "message" => "Update failed: " . $e->getMessage()]);
+    echo json_encode(["success" => false, "message" => "❌ Update failed: " . $e->getMessage()]);
 }

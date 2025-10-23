@@ -14,13 +14,63 @@ $limit = 50;
 $offset = ($page - 1) * $limit;
 
 try {
-    // Count total active sites
-    $countStmt = $pdo->query("SELECT COUNT(*) FROM sites WHERE status = 'active'");
+    // ✅ Dynamic filter conditions
+    $where = ["status = 'active'"];
+    $params = [];
+
+    // Filter by niche
+    if (!empty($_GET['niche'])) {
+        $where[] = "niche = :niche";
+        $params[':niche'] = $_GET['niche'];
+    }
+
+    // Filter by country
+    if (!empty($_GET['country'])) {
+        $where[] = "country = :country";
+        $params[':country'] = $_GET['country'];
+    }
+
+    // Filter by DR range
+    if (isset($_GET['min_dr']) && is_numeric($_GET['min_dr'])) {
+        $where[] = "dr >= :min_dr";
+        $params[':min_dr'] = $_GET['min_dr'];
+    }
+    if (isset($_GET['max_dr']) && is_numeric($_GET['max_dr'])) {
+        $where[] = "dr <= :max_dr";
+        $params[':max_dr'] = $_GET['max_dr'];
+    }
+
+    // Filter by Traffic range
+    if (isset($_GET['min_traffic']) && is_numeric($_GET['min_traffic'])) {
+        $where[] = "traffic >= :min_traffic";
+        $params[':min_traffic'] = $_GET['min_traffic'];
+    }
+    if (isset($_GET['max_traffic']) && is_numeric($_GET['max_traffic'])) {
+        $where[] = "traffic <= :max_traffic";
+        $params[':max_traffic'] = $_GET['max_traffic'];
+    }
+
+    // Search by site name or description
+    if (!empty($_GET['search'])) {
+        $where[] = "(site_name LIKE :search OR description LIKE :search)";
+        $params[':search'] = '%' . $_GET['search'] . '%';
+    }
+
+    // Build WHERE clause
+    $whereClause = implode(' AND ', $where);
+
+    // ✅ Count total active sites with filters
+    $countQuery = "SELECT COUNT(*) FROM sites WHERE $whereClause";
+    $countStmt = $pdo->prepare($countQuery);
+    foreach ($params as $key => $val) {
+        $countStmt->bindValue($key, $val);
+    }
+    $countStmt->execute();
     $totalRows = (int) $countStmt->fetchColumn();
     $totalPages = ceil($totalRows / $limit);
 
     // ✅ Fetch active sites + discount info
-    $stmt = $pdo->prepare("
+    $query = "
         SELECT 
             id,
             site_name,
@@ -38,12 +88,21 @@ try {
             has_discount,
             discount_start,
             discount_end,
-            discount_percent  -- ✅ Added this line
+            discount_percent
         FROM sites
-        WHERE status = 'active'
+        WHERE $whereClause
         ORDER BY created_at DESC
         LIMIT :limit OFFSET :offset
-    ");
+    ";
+
+    $stmt = $pdo->prepare($query);
+
+    // Bind filters
+    foreach ($params as $key => $val) {
+        $stmt->bindValue($key, $val);
+    }
+
+    // Bind pagination
     $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
     $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
     $stmt->execute();
@@ -84,7 +143,8 @@ try {
         "total" => $totalRows,
         "total_pages" => $totalPages,
         "data" => $sites
-    ]);
+    ], JSON_UNESCAPED_SLASHES);
+
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(["error" => "Query failed: " . $e->getMessage()]);

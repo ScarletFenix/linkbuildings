@@ -1,5 +1,5 @@
 <?php 
-require_once __DIR__ . '/../includes/auth.php'; 
+require_once __DIR__ . '/../../includes/auth.php'; 
 requireRole('buyer'); 
 ?>
 <!DOCTYPE html>
@@ -40,6 +40,25 @@ requireRole('buyer');
 <body class="p-6 bg-gray-50">
 
 <div class="max-w-7xl mx-auto">
+
+  <!-- ✅ Filter Section -->
+  <div class="mb-6 bg-white p-4 rounded-lg shadow border border-gray-200">
+    <h2 class="text-lg font-semibold mb-3 text-gray-800">Filters</h2>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 text-sm">
+      <input id="filter-niche" type="text" placeholder="Niche" class="border p-2 rounded w-full">
+      <input id="filter-country" type="text" placeholder="Country" class="border p-2 rounded w-full">
+      <input id="filter-min-dr" type="number" placeholder="Min DR" class="border p-2 rounded w-full">
+      <input id="filter-max-dr" type="number" placeholder="Max DR" class="border p-2 rounded w-full">
+      <input id="filter-min-traffic" type="number" placeholder="Min Traffic" class="border p-2 rounded w-full">
+      <input id="filter-max-traffic" type="number" placeholder="Max Traffic" class="border p-2 rounded w-full">
+      <input id="filter-search" type="text" placeholder="Search..." class="border p-2 rounded w-full col-span-2 md:col-span-3 lg:col-span-6">
+    </div>
+    <div class="mt-4 flex justify-end gap-2">
+      <button id="apply-filters" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm">Apply Filters</button>
+      <button id="reset-filters" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded text-sm">Reset</button>
+    </div>
+  </div>
+
   <!-- Table -->
   <div class="overflow-x-auto rounded-lg border border-gray-200 max-h-[800px] overflow-y-auto">
   <table class="w-full text-xs sm:text-sm text-gray-800 text-center">
@@ -65,41 +84,7 @@ requireRole('buyer');
 </div>
 
 <script>  
-document.addEventListener("click", async function(e) {
-  if (e.target.classList.contains("buy-now")) {
-    e.preventDefault();
-
-    const btn = e.target;
-    const siteId = btn.getAttribute("data-site-id");
-
-    try {
-      const res = await fetch("/linkbuildings/cart/add_to_cart.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: "site_id=" + siteId
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        document.getElementById("cart-count").innerText = data.cart_count;
-        btn.innerText = "✅ Added";
-        btn.classList.remove("bg-green-600", "hover:bg-green-700");
-        btn.classList.add("bg-gray-500", "cursor-not-allowed");
-
-        setTimeout(() => {
-          btn.innerText = "Buy Now";
-          btn.classList.add("bg-green-600", "hover:bg-green-700");
-          btn.classList.remove("bg-gray-500", "cursor-not-allowed");
-        }, 2000);
-      }
-    } catch (err) {
-      console.error("Error:", err);
-    }
-  }
-});
-
-// Country mapping
+// ✅ Country mapping
 const countryCodes = {
   "Germany": "de","Spain": "es","Italy": "it","Austria": "at","Sweden": "se",
   "Norway": "no","Denmark": "dk","Finland": "fi","Portugal": "pt","Brazil": "br",
@@ -107,9 +92,24 @@ const countryCodes = {
   "France": "fr","Greece": "gr","Hungary": "hu","Slovakia": "sk","Slovenia": "si"
 };
 
+// ✅ Collect current filters
+function getFilters() {
+  return {
+    niche: document.getElementById("filter-niche").value.trim(),
+    country: document.getElementById("filter-country").value.trim(),
+    min_dr: document.getElementById("filter-min-dr").value.trim(),
+    max_dr: document.getElementById("filter-max-dr").value.trim(),
+    min_traffic: document.getElementById("filter-min-traffic").value.trim(),
+    max_traffic: document.getElementById("filter-max-traffic").value.trim(),
+    search: document.getElementById("filter-search").value.trim()
+  };
+}
+
 async function loadSites(page = 1) {
   try {
-    const res = await fetch(`/linkbuildings/api/sites.php?page=${page}`);
+    const filters = getFilters();
+    const query = new URLSearchParams({ page, ...filters }).toString();
+    const res = await fetch(`/linkbuildings/api/sites.php?${query}`);
     if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const data = await res.json();
 
@@ -132,7 +132,6 @@ async function loadSites(page = 1) {
         const timerId = `timer-${site.id}`;
 
         if (now < startTime) {
-          // Upcoming
           discountHTML = `
             <div class="flex flex-col items-center">
               <span class="text-yellow-600 font-semibold">Upcoming</span>
@@ -140,7 +139,6 @@ async function loadSites(page = 1) {
             </div>
           `;
         } else if (now >= startTime && now < endTime) {
-          // ✅ Active → show discount percent instead of “Active”
           const percent = site.discount_percent && site.discount_percent != 0
             ? parseFloat(site.discount_percent).toString().replace(/\.0+$/, "")
             : null;
@@ -162,7 +160,6 @@ async function loadSites(page = 1) {
           }
           setTimeout(() => startCountdown(site.discount_end, timerId), 100);
         } else {
-          // Expired
           discountHTML = `
             <div class="flex flex-col items-center">
               <span class="text-gray-500 font-semibold">Expired</span>
@@ -189,10 +186,10 @@ async function loadSites(page = 1) {
         <td class="px-2 py-3">${site.backlinks}</td>
         <td class="px-2 py-3 font-bold">€${site.price}</td>
         <td class="px-2 py-3">
-          <button class="buy-now bg-green-600 text-white px-3 py-1 text-xs rounded hover:bg-green-700"
-                  data-site-id="${site.id}">
+          <a href="/linkbuildings/checkout.php?site_id=${site.id}" 
+             class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-xs rounded transition">
             Buy Now
-          </button>
+          </a>
         </td>
       `;
 
@@ -210,8 +207,7 @@ async function loadSites(page = 1) {
             </div>
             <div class="grid grid-cols-3 gap-4 text-center mb-6">
               <div class="p-4 bg-white shadow rounded-lg">
-                <div class="text-sm font-bold text-gray-600">DR
-                </div>
+                <div class="text-sm font-bold text-gray-600">DR</div>
                 <div class="text-2xl font-semibold text-blue-600">${site.dr}</div>
               </div>
               <div class="p-4 bg-white shadow rounded-lg">
@@ -242,7 +238,7 @@ async function loadSites(page = 1) {
         </td>
       `;
 
-      // Expand/collapse
+      // Expand/collapse logic
       row.addEventListener("click", () => {
         const expandable = detailsRow.querySelector(".expandable");
         const isVisible = detailsRow.style.display === "table-row";
@@ -258,7 +254,7 @@ async function loadSites(page = 1) {
         }
       });
 
-      // Niche toggle
+      // Toggle niches
       const toggleNiches = row.querySelector(".toggle-niches");
       if (toggleNiches) {
         toggleNiches.addEventListener("click", (e) => {
@@ -295,6 +291,7 @@ async function loadSites(page = 1) {
     console.error("Failed to load sites:", err);
   }
 }
+
 
 // Countdown Timer
 function startCountdown(endTime, elementId) {
@@ -337,6 +334,14 @@ function formatNiches(niches) {
   }
   return html;
 }
+
+// ✅ Apply & Reset filter buttons
+document.getElementById("apply-filters").addEventListener("click", () => loadSites(1));
+document.getElementById("reset-filters").addEventListener("click", () => {
+  document.querySelectorAll("#filter-niche, #filter-country, #filter-min-dr, #filter-max-dr, #filter-min-traffic, #filter-max-traffic, #filter-search")
+    .forEach(el => el.value = "");
+  loadSites(1);
+});
 
 loadSites();
 </script>

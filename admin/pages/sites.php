@@ -89,31 +89,6 @@ $nichesList = [
       <input type="file" name="site_img" class="w-full border rounded p-2" required>
     </div>
 
-    <!-- ✅ Discount Settings -->
-    <div class="md:col-span-3 border rounded p-4 bg-gray-50">
-      <label class="block text-sm font-medium mb-2">Discount Settings</label>
-      <div class="flex items-center gap-2 mb-3">
-        <input type="checkbox" name="has_discount" id="has_discount" value="1" class="w-4 h-4">
-        <span>Enable discount for this site</span>
-      </div>
-
-      <div id="discountFields" class="grid grid-cols-2 gap-4 hidden">
-        <div>
-          <label class="block text-sm font-medium">Discount Start</label>
-          <input type="datetime-local" name="discount_start" class="w-full border rounded p-2">
-        </div>
-        <div>
-          <label class="block text-sm font-medium">Discount End</label>
-          <input type="datetime-local" name="discount_end" class="w-full border rounded p-2">
-        </div>
-        <div>
-          <label class="block text-sm font-medium">Discount Percentage</label>
-          <!-- ✅ FIXED name -->
-          <input type="number" name="discount_percent" min="1" max="100" class="w-full border rounded p-2">
-        </div>
-      </div>
-    </div>
-
     <!-- Description -->
     <div class="md:col-span-3">
       <label class="block text-sm font-medium">Description <span class="text-red-600">*</span></label>
@@ -146,10 +121,18 @@ $nichesList = [
         <label class="block text-sm font-medium">Site Name</label>
         <input type="text" name="site_name" class="w-full border rounded p-2" required>
       </div>
-      <div>
+
+      <!-- Niche Selector (Same as Add Form) -->
+      <div class="col-span-2">
         <label class="block text-sm font-medium">Niche</label>
-        <input type="text" name="niche" class="w-full border rounded p-2" required>
+        <div id="editNicheSelect" class="w-full border rounded p-2 relative">
+          <div id="editSelectedNiches" class="flex flex-wrap gap-2 mb-2"></div>
+          <input type="text" id="editNicheSearch" placeholder="Search niches..." class="w-full border rounded p-2">
+          <div id="editNicheOptions" class="absolute z-10 bg-white border rounded w-full mt-1 max-h-40 overflow-y-auto hidden"></div>
+        </div>
+        <input type="hidden" name="niche" id="editNicheHidden">
       </div>
+
       <div>
         <label class="block text-sm font-medium">Site URL</label>
         <input type="url" name="site_url" class="w-full border rounded p-2" required>
@@ -175,31 +158,6 @@ $nichesList = [
         <input type="number" name="backlinks" class="w-full border rounded p-2" required>
       </div>
 
-      <!-- ✅ Discount Settings in Edit -->
-      <div class="col-span-2 border rounded p-4 bg-gray-50">
-        <label class="block text-sm font-medium mb-2">Discount Settings</label>
-        <div class="flex items-center gap-2 mb-3">
-          <input type="checkbox" name="has_discount" id="edit_has_discount" value="1" class="w-4 h-4">
-          <span>Enable discount for this site</span>
-        </div>
-
-        <div id="edit_discount_fields" class="grid grid-cols-2 gap-4 hidden">
-          <div>
-            <label class="block text-sm font-medium">Discount Start</label>
-            <input type="datetime-local" name="discount_start" class="w-full border rounded p-2">
-          </div>
-          <div>
-            <label class="block text-sm font-medium">Discount End</label>
-            <input type="datetime-local" name="discount_end" class="w-full border rounded p-2">
-          </div>
-          <div>
-            <label class="block text-sm font-medium">Discount Percentage</label>
-            <!-- ✅ FIXED name -->
-            <input type="number" name="discount_percent" min="1" max="100" class="w-full border rounded p-2">
-          </div>
-        </div>
-      </div>
-
       <div class="col-span-2">
         <label class="block text-sm font-medium">Description</label>
         <textarea name="description" rows="3" class="w-full border rounded p-2" required></textarea>
@@ -221,6 +179,8 @@ $nichesList = [
 
 <script>
 const niches = <?= json_encode($nichesList) ?>;
+
+// --- Add Form Niche Selector ---
 const nicheInput = document.getElementById('nicheSearch');
 const nicheOptions = document.getElementById('nicheOptions');
 const selectedNichesDiv = document.getElementById('selectedNiches');
@@ -264,29 +224,66 @@ document.addEventListener('click', e => {
   if (!e.target.closest('#nicheSelect')) nicheOptions.classList.add('hidden');
 });
 
-const hasDiscountCheckbox = document.getElementById('has_discount');
-const discountFields = document.getElementById('discountFields');
-hasDiscountCheckbox.addEventListener('change', function() {
-  discountFields.classList.toggle('hidden', !this.checked);
-});
+// --- Edit Form Niche Selector ---
+const editNicheInput = document.getElementById('editNicheSearch');
+const editNicheOptions = document.getElementById('editNicheOptions');
+const editSelectedNichesDiv = document.getElementById('editSelectedNiches');
+const editHiddenInput = document.getElementById('editNicheHidden');
+let editSelectedNiches = [];
 
-const editHasDiscount = document.getElementById('edit_has_discount');
-const editDiscountFields = document.getElementById('edit_discount_fields');
-editHasDiscount.addEventListener('change', function() {
-  editDiscountFields.classList.toggle('hidden', !this.checked);
-});
+function renderEditOptions() {
+  const val = editNicheInput.value.toLowerCase();
+  editNicheOptions.innerHTML = '';
+  niches.filter(n => n.toLowerCase().includes(val) && !editSelectedNiches.includes(n))
+    .forEach(n => {
+      const div = document.createElement('div');
+      div.textContent = n;
+      div.className = 'p-2 hover:bg-gray-200 cursor-pointer';
+      div.onclick = () => {
+        if (editSelectedNiches.length < 5) editSelectedNiches.push(n);
+        renderEditSelected();
+        editNicheInput.value = '';
+        editNicheOptions.classList.add('hidden');
+      };
+      editNicheOptions.appendChild(div);
+    });
+  editNicheOptions.classList.toggle('hidden', editNicheOptions.innerHTML === '');
+}
 
-document.addEventListener('DOMContentLoaded', () => {
-  const observer = new MutationObserver(() => {
-    if (!document.getElementById('editModal').classList.contains('hidden')) {
-      const chk = document.getElementById('edit_has_discount');
-      const fields = document.getElementById('edit_discount_fields');
-      fields.classList.toggle('hidden', !chk.checked);
-    }
+function renderEditSelected() {
+  editSelectedNichesDiv.innerHTML = '';
+  editSelectedNiches.forEach(n => {
+    const span = document.createElement('span');
+    span.textContent = n + ' ×';
+    span.className = 'bg-blue-100 text-blue-700 px-2 py-1 rounded-full cursor-pointer';
+    span.onclick = () => { editSelectedNiches = editSelectedNiches.filter(x => x !== n); renderEditSelected(); };
+    editSelectedNichesDiv.appendChild(span);
   });
-  observer.observe(document.getElementById('editModal'), { attributes: true, attributeFilter: ['class'] });
+  editHiddenInput.value = editSelectedNiches.join(',');
+}
+
+editNicheInput.addEventListener('input', renderEditOptions);
+editNicheInput.addEventListener('focus', renderEditOptions);
+document.addEventListener('click', e => {
+  if (!e.target.closest('#editNicheSelect')) editNicheOptions.classList.add('hidden');
 });
 
+// --- Prefill Edit Modal Niches ---
+function populateEditNiches(existingNiches) {
+  editSelectedNiches = existingNiches ? existingNiches.split(',').map(n => n.trim()) : [];
+  renderEditSelected();
+}
+
+// Example usage: when edit button clicked
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('editBtn')) {
+    const row = e.target.closest('tr');
+    const niches = row.dataset.niche || '';
+    populateEditNiches(niches);
+  }
+});
+
+// --- Add Form Submit ---
 document.getElementById("siteForm").addEventListener("submit", function(e) {
   e.preventDefault();
   const formData = new FormData(this);
@@ -304,7 +301,6 @@ document.getElementById("siteForm").addEventListener("submit", function(e) {
       this.reset();
       selectedNiches = [];
       renderSelected();
-      discountFields.classList.add('hidden');
       setTimeout(() => alertBox.innerHTML = '', 3000);
 
       fetch("/linkbuildings/admin/partials/sites_table.php")

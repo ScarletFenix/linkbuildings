@@ -13,19 +13,15 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 // Collect inputs
-$siteName        = trim($_POST['site_name'] ?? '');
-$description     = trim($_POST['description'] ?? '');
-$niche           = trim($_POST['niche'] ?? '');
-$siteUrl         = trim($_POST['site_url'] ?? '');
-$price           = $_POST['price'] ?? '';
-$dr              = $_POST['dr'] ?? '';
-$traffic         = $_POST['traffic'] ?? '';
-$country         = trim($_POST['country'] ?? '');
-$backlinks       = $_POST['backlinks'] ?? '';
-$hasDiscount     = isset($_POST['has_discount']) ? 1 : 0;
-$discountStart   = trim($_POST['discount_start'] ?? '');
-$discountEnd     = trim($_POST['discount_end'] ?? '');
-$discountPercent = trim($_POST['discount_percent'] ?? ''); // ✅ added
+$siteName    = trim($_POST['site_name'] ?? '');
+$description = trim($_POST['description'] ?? '');
+$niche       = trim($_POST['niche'] ?? '');
+$siteUrl     = trim($_POST['site_url'] ?? '');
+$price       = $_POST['price'] ?? '';
+$dr          = $_POST['dr'] ?? '';
+$traffic     = $_POST['traffic'] ?? '';
+$country     = trim($_POST['country'] ?? '');
+$backlinks   = $_POST['backlinks'] ?? '';
 
 $errors = [];
 
@@ -40,29 +36,6 @@ if ($dr === '' || $dr < 0) $errors['dr'] = "DR must be zero or positive";
 if ($traffic === '' || $traffic < 0) $errors['traffic'] = "Traffic must be zero or positive";
 if ($country === '') $errors['country'] = "Country is required";
 if ($backlinks === '' || $backlinks < 0) $errors['backlinks'] = "Backlinks must be zero or positive";
-
-// Discount validation
-if ($hasDiscount) {
-    if ($discountStart === '' || $discountEnd === '') {
-        $errors['discount_time'] = "Start and end time required for discount";
-    } else {
-        // Basic date validation
-        $startTimestamp = strtotime($discountStart);
-        $endTimestamp = strtotime($discountEnd);
-        if (!$startTimestamp || !$endTimestamp) {
-            $errors['discount_time'] = "Invalid date format for discount start or end";
-        } elseif ($endTimestamp <= $startTimestamp) {
-            $errors['discount_time'] = "Discount end time must be after start time";
-        }
-    }
-
-    // ✅ discount percent validation
-    if ($discountPercent === '' || !is_numeric($discountPercent) || $discountPercent < 0 || $discountPercent > 100) {
-        $errors['discount_percent'] = "Discount percent must be a number between 0 and 100";
-    }
-} else {
-    $discountPercent = null;
-}
 
 // Handle upload
 $imgName = null;
@@ -89,9 +62,9 @@ if (!empty($_FILES['site_img']['tmp_name']) && is_uploaded_file($_FILES['site_im
 
 // Save to DB
 if (empty($errors)) {
-    $stmt = $pdo->prepare("INSERT INTO sites    
-        (site_name, description, niche, site_url, price, dr, traffic, country, backlinks, status, site_img, has_discount, discount_start, discount_end, discount_percent) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', ?, ?, ?, ?, ?)");
+    $stmt = $pdo->prepare("INSERT INTO sites
+        (site_name, description, niche, site_url, price, dr, traffic, country, backlinks, status, site_img)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', ?)");
 
     $stmt->execute([
         $siteName,
@@ -103,11 +76,7 @@ if (empty($errors)) {
         $traffic,
         $country,
         $backlinks,
-        $imgName,
-        $hasDiscount,
-        $discountStart ?: null,
-        $discountEnd ?: null,
-        $discountPercent // ✅ added
+        $imgName
     ]);
 
     $response['success'] = true;

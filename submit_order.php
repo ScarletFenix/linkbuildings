@@ -1,148 +1,144 @@
 <?php
 session_start();
+require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/includes/db.php';
+requireRole('buyer');
 
-require_once 'includes/db.php';
-require_once 'includes/auth.php';
+header('Content-Type: application/json');
 
-// -------------------- AUTH CHECK --------------------
-if (!isset($_SESSION['user_id'])) {
-    http_response_code(403);
-    die(json_encode(["success" => false, "message" => "Access denied. You must be logged in."]));
-}
-
-$user_id = $_SESSION['user_id'];
-
-// -------------------- PROCESS POST --------------------
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    die(json_encode(["success" => false, "message" => "Invalid request."]));
-}
-
-// ✅ Get posted items from form
-$cart = $_POST['items'] ?? [];
-if (empty($cart)) {
-    die(json_encode(["success" => false, "message" => "Cart is empty or invalid."]));
-}
-
-// ✅ Capture extra form info
-$other_instructions = $_POST['other_instructions'] ?? '';
-$payment_method = $_POST['payment_method'] ?? 'invoice';
-
-// ✅ Billing Info
-$billing_company  = $_POST['billing_company'] ?? '';
-$billing_vat      = $_POST['billing_vat'] ?? '';
-$billing_address  = $_POST['billing_address'] ?? '';
-$billing_city     = $_POST['billing_city'] ?? '';
-$billing_postal   = $_POST['billing_postal'] ?? '';
-$billing_country  = $_POST['billing_country'] ?? '';
-$billing_email    = $_POST['billing_email'] ?? '';
-
-// ✅ Totals (from frontend or calculated)
-$total_before   = isset($_POST['total_before']) ? (float)$_POST['total_before'] : 0;
-$discount_total = isset($_POST['discount_amount']) ? (float)$_POST['discount_amount'] : 0;
-$grand_total    = isset($_POST['final_total']) ? (float)$_POST['final_total'] : 0;
-
-// -------------------- VALIDATE TOTALS --------------------
-// If no frontend totals were passed, fallback to backend calculation
-if ($total_before === 0 && $grand_total === 0) {
-    $total_before = 0;
-    $discount_total = 0;
-    $grand_total = 0;
-
-    foreach ($cart as &$item) {
-        $price = (float)($item['price'] ?? 0);
-        $discount_amount = (float)($item['discount_amount'] ?? 0);
-        $final_price = (float)($item['final_price'] ?? $price);
-        $content_added = !empty($item['linkDestination']) ? 1 : 0;
-
-        if ($content_added) {
-            $final_price += 20;
-        }
-
-        $total_before += $price;
-        $discount_total += $discount_amount;
-        $grand_total += $final_price;
-
-        // store updated values back
-        $item['content_added'] = $content_added;
-        $item['final_price'] = $final_price;
-    }
-}
-
-// -------------------- DATABASE INSERTS --------------------
 try {
-    $pdo->beginTransaction();
+    if (!isset($_SESSION['user_id'])) {
+        throw new Exception('User not authenticated.');
+    }
 
-    // ✅ Insert into orders
+    $user_id = $_SESSION['user_id'];
+
+    // Collect form data
+    $site_id = $_POST['site_id'] ?? null;
+    $total_before = isset($_POST['total_before']) ? (float)$_POST['total_before'] : 0;
+    $final_total = isset($_POST['final_total']) ? (float)$_POST['final_total'] : 0;
+    $target_url = trim($_POST['target_url'] ?? '');
+    $anchor_text = trim($_POST['anchor_text'] ?? '');
+    $requirements = trim($_POST['requirements'] ?? '');
+    $payment_method = $_POST['payment_method'] ?? 'invoice';
+
+    // Billing fields
+    $billing_company = trim($_POST['billing_company'] ?? '');
+    $billing_vat = trim($_POST['billing_vat'] ?? '');
+    $billing_address = trim($_POST['billing_address'] ?? '');
+    $billing_city = trim($_POST['billing_city'] ?? '');
+    $billing_postal = trim($_POST['billing_postal'] ?? '');
+    $billing_country = trim($_POST['billing_country'] ?? '');
+    $billing_email = trim($_POST['billing_email'] ?? '');
+
+    // ✅ Add Content fields
+    $add_content = isset($_POST['add_content']) ? (int)$_POST['add_content'] : 0;
+
+    // Only store content data if "Add Content" is checked
+    $link_destination = $add_content ? trim($_POST['link_destination'] ?? '') : null;
+    $topic_suggestion = $add_content ? trim($_POST['topic_suggestion'] ?? '') : null;
+    $anchor_text_content = $add_content ? trim($_POST['anchor_text_content'] ?? '') : null;
+    $trust_links = $add_content ? trim($_POST['trust_links'] ?? '') : null;
+
+    // Validate essential fields
+    if (empty($site_id) || empty($target_url) || empty($anchor_text) || empty($requirements)) {
+        throw new Exception("Missing required fields.");
+    }
+
+    if (!in_array($payment_method, ['invoice', 'wise'])) {
+        throw new Exception("Invalid payment method.");
+    }
+
+    $payment_status = 'pending';
+
+    // Insert order into single `orders` table
     $stmt = $pdo->prepare("
-        INSERT INTO orders 
-        (user_id, total_before, discount_amount, final_total, other_instructions, payment_method,
-         billing_company, billing_vat, billing_address, billing_city, billing_postal, billing_country, billing_email)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+        INSERT INTO orders (
+            user_id,
+            site_id,
+            total_before,
+            final_total,
+            target_url,
+            anchor_text,
+            requirements,
+            payment_method,
+            payment_status,
+            billing_company,
+            billing_vat,
+            billing_address,
+            billing_city,
+            billing_postal,
+            billing_country,
+            billing_email,
+            add_content,
+            link_destination,
+            topic_suggestion,
+            anchor_text_content,
+            trust_links,
+            created_at
+        ) VALUES (
+            :user_id,
+            :site_id,
+            :total_before,
+            :final_total,
+            :target_url,
+            :anchor_text,
+            :requirements,
+            :payment_method,
+            :payment_status,
+            :billing_company,
+            :billing_vat,
+            :billing_address,
+            :billing_city,
+            :billing_postal,
+            :billing_country,
+            :billing_email,
+            :add_content,
+            :link_destination,
+            :topic_suggestion,
+            :anchor_text_content,
+            :trust_links,
+            NOW()
+        )
     ");
 
     $stmt->execute([
-        $user_id,
-        $total_before,
-        $discount_total,
-        $grand_total,
-        $other_instructions,
-        $payment_method,
-        $billing_company,
-        $billing_vat,
-        $billing_address,
-        $billing_city,
-        $billing_postal,
-        $billing_country,
-        $billing_email
+        ':user_id' => $user_id,
+        ':site_id' => $site_id,
+        ':total_before' => $total_before,
+        ':final_total' => $final_total,
+        ':target_url' => $target_url,
+        ':anchor_text' => $anchor_text,
+        ':requirements' => $requirements,
+        ':payment_method' => $payment_method,
+        ':payment_status' => $payment_status,
+        ':billing_company' => $billing_company,
+        ':billing_vat' => $billing_vat,
+        ':billing_address' => $billing_address,
+        ':billing_city' => $billing_city,
+        ':billing_postal' => $billing_postal,
+        ':billing_country' => $billing_country,
+        ':billing_email' => $billing_email,
+        ':add_content' => $add_content,
+        ':link_destination' => $link_destination,
+        ':topic_suggestion' => $topic_suggestion,
+        ':anchor_text_content' => $anchor_text_content,
+        ':trust_links' => $trust_links
     ]);
 
-    $order_id = $pdo->lastInsertId();
+    $orderId = $pdo->lastInsertId();
+    unset($_SESSION['current_order_id']);
 
-    // ✅ Insert order items
-    $stmtItem = $pdo->prepare("
-        INSERT INTO order_items 
-        (order_id, site_name, site_url, price, discount_amount, final_price, content_added, 
-         link_destination, topic_suggestion, anchor, trust_link)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?)
-    ");
-
-    foreach ($cart as $item) {
-        $stmtItem->execute([
-            $order_id,
-            $item['site_name'] ?? '',
-            $item['site_url'] ?? '',
-            (float)($item['price'] ?? 0),
-            (float)($item['discount_amount'] ?? 0),
-            (float)($item['final_price'] ?? 0),
-            (int)($item['content_added'] ?? 0),
-            $item['linkDestination'] ?? null,
-            $item['topicSuggestion'] ?? null,
-            $item['anchor'] ?? null,
-            $item['trustLink'] ?? null
-        ]);
-    }
-
-    $pdo->commit();
-
-    // ✅ Clear cart
-    unset($_SESSION['cart']);
-
-    header('Content-Type: application/json');
     echo json_encode([
         'success' => true,
-        'order_id' => $order_id,
-        'message' => "Order submitted successfully.",
-        'total' => $grand_total
+        'message' => 'Order successfully created.',
+        'order_id' => $orderId,
+        'redirect' => '/linkbuildings/buyer/orders.php'
     ]);
-    exit;
 
 } catch (Exception $e) {
-    $pdo->rollBack();
-    http_response_code(500);
     echo json_encode([
-        "success" => false,
-        "message" => "Error processing order: " . $e->getMessage()
+        'success' => false,
+        'message' => 'Error processing order: ' . $e->getMessage()
     ]);
-    exit;
 }
-?>
