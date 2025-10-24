@@ -5,8 +5,6 @@ require_once __DIR__ . '/../includes/db.php'; // Database connection
 
 header('Content-Type: application/json');
 
-
-
 // ✅ Ensure the user is logged in
 $userId = $_SESSION['user_id'] ?? null;
 if (!$userId) {
@@ -33,19 +31,20 @@ try {
         'cancelled' => 0
     ];
 
-    // --- 📋 Fetch recent 5 orders with their site names ---
+    // --- 📋 Fetch recent 10 orders with more detailed fields ---
     $ordersQuery = $pdo->prepare("
         SELECT 
-            o.id,
+            o.order_identifier,
             COALESCE(s.site_url, 'Unknown Site') AS site_url,
             o.created_at,
+            o.payment_method,
             o.payment_status,
+            o.order_status,
             o.final_total
         FROM orders o
         LEFT JOIN sites s ON o.site_id = s.id
         WHERE o.user_id = :user_id
         ORDER BY o.created_at DESC
-        LIMIT 5
     ");
     $ordersQuery->execute(['user_id' => $userId]);
     $recentOrders = $ordersQuery->fetchAll(PDO::FETCH_ASSOC);
@@ -64,7 +63,7 @@ try {
     $growthQuery->execute(['user_id' => $userId]);
     $growthData = $growthQuery->fetchAll(PDO::FETCH_ASSOC);
 
-    // Ensure growth data includes empty months if there are gaps
+    // ✅ Ensure growth data includes empty months if there are gaps
     $months = [];
     for ($i = 5; $i >= 0; $i--) {
         $monthKey = date('M', strtotime("-$i month"));
@@ -78,7 +77,7 @@ try {
     $growth = [
         'labels' => array_keys($months),
         'values' => array_values($months)
-    ];  
+    ];
 
     // --- ✅ Final combined response ---
     echo json_encode([

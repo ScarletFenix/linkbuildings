@@ -20,7 +20,7 @@ function loadOrdersData() {
   if (ordersTableBody) {
     ordersTableBody.innerHTML = `
       <tr>
-        <td colspan="6" class="text-center py-4 text-gray-400">
+        <td colspan="7" class="text-center py-4 text-gray-400">
           Loading orders...
         </td>
       </tr>
@@ -38,23 +38,40 @@ function loadOrdersData() {
       if (Array.isArray(data.recentOrders) && data.recentOrders.length > 0) {
         ordersTableBody.innerHTML = "";
 
+        // ✅ Display all orders (no slicing)
         data.recentOrders.forEach((order) => {
-          const statusMap = {
-            paid: { label: "Completed", color: "bg-green-100 text-green-700" },
-            pending: { label: "In Progress", color: "bg-yellow-100 text-yellow-700" },
-            failed: { label: "Cancelled", color: "bg-red-100 text-red-700" },
+          // Payment status colors
+          const paymentStatusMap = {
+            paid: { label: "Paid", color: "bg-green-100 text-green-700" },
+            pending: { label: "Pending", color: "bg-yellow-100 text-yellow-700" },
+            failed: { label: "Failed", color: "bg-red-100 text-red-700" },
           };
-          const status = statusMap[order.payment_status] || { label: "Unknown", color: "bg-gray-100 text-gray-700" };
+          const payStatus = paymentStatusMap[order.payment_status] || { label: "Unknown", color: "bg-gray-100 text-gray-700" };
+
+          // Order status colors
+          const orderStatusMap = {
+            pending: { label: "Pending", color: "bg-yellow-100 text-yellow-700" },
+            InProgress: { label: "In Progress", color: "bg-blue-100 text-blue-700" },
+            Completed: { label: "Completed", color: "bg-green-100 text-green-700" },
+            Rejected: { label: "Rejected", color: "bg-red-100 text-red-700" },
+          };
+          const ordStatus = orderStatusMap[order.order_status] || { label: "Unknown", color: "bg-gray-100 text-gray-700" };
 
           const row = document.createElement("tr");
           row.className = "border-b hover:bg-gray-50 transition";
           row.innerHTML = `
-            <td class="px-4 py-3 font-medium text-gray-800">#${order.id}</td>
-            <td class="px-4 py-3">${order.site_url}</td>
+            <td class="px-4 py-3 font-medium text-gray-800">${order.order_identifier || order.id}</td>
+            <td class="px-4 py-3">${order.site_url || "Unknown Site"}</td>
             <td class="px-4 py-3">${formatDateTime(order.created_at)}</td>
+            <td class="px-4 py-3">${order.payment_method || "N/A"}</td>
             <td class="px-4 py-3">
-              <span class="px-2 py-1 text-xs font-medium rounded-full ${status.color}">
-                ${status.label}
+              <span class="px-2 py-1 text-xs font-medium rounded-full ${payStatus.color}">
+                ${payStatus.label}
+              </span>
+            </td>
+            <td class="px-4 py-3">
+              <span class="px-2 py-1 text-xs font-medium rounded-full ${ordStatus.color}">
+                ${ordStatus.label}
               </span>
             </td>
             <td class="px-4 py-3 text-right font-semibold">$${parseFloat(order.final_total || 0).toFixed(2)}</td>
@@ -65,7 +82,7 @@ function loadOrdersData() {
       } else {
         ordersTableBody.innerHTML = `
           <tr>
-            <td colspan="6" class="text-center py-4 text-gray-400">
+            <td colspan="7" class="text-center py-4 text-gray-400">
               No orders found.
             </td>
           </tr>
@@ -79,7 +96,7 @@ function loadOrdersData() {
       if (ordersTableBody) {
         ordersTableBody.innerHTML = `
           <tr>
-            <td colspan="6" class="text-center py-4 text-red-500">
+            <td colspan="7" class="text-center py-4 text-red-500">
               Error: ${err.message}
             </td>
           </tr>
@@ -88,7 +105,7 @@ function loadOrdersData() {
     });
 }
 
-// ✅ Export globally so the AJAX page loader can trigger it
+// ✅ Export globally so the AJAX loader can trigger it
 window.loadOrdersData = loadOrdersData;
 
 // ✅ Auto-run when loaded directly

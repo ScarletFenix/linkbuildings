@@ -13,16 +13,16 @@ try {
 
     $user_id = $_SESSION['user_id'];
 
-    // Collect form data
+    // ✅ Collect form data
     $site_id = $_POST['site_id'] ?? null;
     $total_before = isset($_POST['total_before']) ? (float)$_POST['total_before'] : 0;
     $final_total = isset($_POST['final_total']) ? (float)$_POST['final_total'] : 0;
     $target_url = trim($_POST['target_url'] ?? '');
     $anchor_text = trim($_POST['anchor_text'] ?? '');
-    $requirements = trim($_POST['requirements'] ?? '');
+    $requirements = trim($_POST['requirements'] ?? ''); // optional
     $payment_method = $_POST['payment_method'] ?? 'invoice';
 
-    // Billing fields
+    // ✅ Billing fields
     $billing_company = trim($_POST['billing_company'] ?? '');
     $billing_vat = trim($_POST['billing_vat'] ?? '');
     $billing_address = trim($_POST['billing_address'] ?? '');
@@ -31,17 +31,8 @@ try {
     $billing_country = trim($_POST['billing_country'] ?? '');
     $billing_email = trim($_POST['billing_email'] ?? '');
 
-    // ✅ Add Content fields
-    $add_content = isset($_POST['add_content']) ? (int)$_POST['add_content'] : 0;
-
-    // Only store content data if "Add Content" is checked
-    $link_destination = $add_content ? trim($_POST['link_destination'] ?? '') : null;
-    $topic_suggestion = $add_content ? trim($_POST['topic_suggestion'] ?? '') : null;
-    $anchor_text_content = $add_content ? trim($_POST['anchor_text_content'] ?? '') : null;
-    $trust_links = $add_content ? trim($_POST['trust_links'] ?? '') : null;
-
-    // Validate essential fields
-    if (empty($site_id) || empty($target_url) || empty($anchor_text) || empty($requirements)) {
+    // ✅ Validate essential fields
+    if (empty($site_id) || empty($target_url) || empty($anchor_text)) {
         throw new Exception("Missing required fields.");
     }
 
@@ -49,13 +40,19 @@ try {
         throw new Exception("Invalid payment method.");
     }
 
-    $payment_status = 'pending';
+    // ✅ Generate or reuse order ID
+    $order_identifier = $_SESSION['current_order_id'] ?? 'ORD' . strtoupper(substr(uniqid(), -6));
 
-    // Insert order into single `orders` table
+    // ✅ Define statuses [pending, InProgress, Completed, Rejected]
+    $order_status = 'pending'; // default
+    $payment_status = 'pending'; // default
+
+    // ✅ Insert order into `orders` table
     $stmt = $pdo->prepare("
         INSERT INTO orders (
             user_id,
             site_id,
+            order_identifier,
             total_before,
             final_total,
             target_url,
@@ -63,6 +60,7 @@ try {
             requirements,
             payment_method,
             payment_status,
+            order_status,
             billing_company,
             billing_vat,
             billing_address,
@@ -70,15 +68,11 @@ try {
             billing_postal,
             billing_country,
             billing_email,
-            add_content,
-            link_destination,
-            topic_suggestion,
-            anchor_text_content,
-            trust_links,
             created_at
         ) VALUES (
             :user_id,
             :site_id,
+            :order_identifier,
             :total_before,
             :final_total,
             :target_url,
@@ -86,6 +80,7 @@ try {
             :requirements,
             :payment_method,
             :payment_status,
+            :order_status,
             :billing_company,
             :billing_vat,
             :billing_address,
@@ -93,11 +88,6 @@ try {
             :billing_postal,
             :billing_country,
             :billing_email,
-            :add_content,
-            :link_destination,
-            :topic_suggestion,
-            :anchor_text_content,
-            :trust_links,
             NOW()
         )
     ");
@@ -105,6 +95,7 @@ try {
     $stmt->execute([
         ':user_id' => $user_id,
         ':site_id' => $site_id,
+        ':order_identifier' => $order_identifier,
         ':total_before' => $total_before,
         ':final_total' => $final_total,
         ':target_url' => $target_url,
@@ -112,18 +103,14 @@ try {
         ':requirements' => $requirements,
         ':payment_method' => $payment_method,
         ':payment_status' => $payment_status,
+        ':order_status' => $order_status,
         ':billing_company' => $billing_company,
         ':billing_vat' => $billing_vat,
         ':billing_address' => $billing_address,
         ':billing_city' => $billing_city,
         ':billing_postal' => $billing_postal,
         ':billing_country' => $billing_country,
-        ':billing_email' => $billing_email,
-        ':add_content' => $add_content,
-        ':link_destination' => $link_destination,
-        ':topic_suggestion' => $topic_suggestion,
-        ':anchor_text_content' => $anchor_text_content,
-        ':trust_links' => $trust_links
+        ':billing_email' => $billing_email
     ]);
 
     $orderId = $pdo->lastInsertId();
@@ -133,6 +120,7 @@ try {
         'success' => true,
         'message' => 'Order successfully created.',
         'order_id' => $orderId,
+        'order_identifier' => $order_identifier,
         'redirect' => '/linkbuildings/buyer/orders.php'
     ]);
 

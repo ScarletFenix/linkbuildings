@@ -74,7 +74,6 @@ $finalTotalFormatted = number_format($finalTotal, 2);
             <tr class="bg-gray-800 text-white text-left">
               <th class="px-4 py-2">Site</th>
               <th class="px-4 py-2">Price (€)</th>
-              <th class="px-4 py-2">Add Content (€20)</th>
             </tr>
           </thead>
           <tbody id="cart-body">
@@ -92,37 +91,9 @@ $finalTotalFormatted = number_format($finalTotal, 2);
               </td>
 
               <td class="px-4 py-2">€<?= number_format($site['price'], 2) ?></td>
-
-              <td class="px-4 py-2 text-center">
-                <label class="flex justify-center items-center space-x-2 cursor-pointer">
-                  <input type="checkbox" name="add_content" value="1" class="add-content h-4 w-4 text-blue-600 border-gray-300 rounded">
-                  <span class="text-sm">Add Content</span>
-                </label>
-              </td>
-            </tr>
-
-            <!-- Content Form -->
-            <tr id="content-form" class="hidden bg-gray-50">
-              <td colspan="3" class="px-6 py-3">
-                <div class="grid md:grid-cols-1 gap-3 animate-fadeIn">
-                  <label class="font-medium">Link Destination</label>
-                  <input type="text" name="link_destination" placeholder="Enter the destination URL (e.g. https://example.com)" class="border rounded p-2 w-full text-sm">
-
-                  <label class="font-medium">Topic Suggestion</label>
-                  <input type="text" name="topic_suggestion" placeholder="Enter your topic idea (e.g. SEO best practices)" class="border rounded p-2 w-full text-sm">
-
-                  <label class="font-medium">Anchor Text</label>
-                  <input type="text" name="anchor_text_content" placeholder="Enter anchor text (e.g. digital marketing)" class="border rounded p-2 w-full text-sm">
-
-                  <label class="font-medium">Trust Links</label>
-                  <input type="text" name="trust_links" placeholder="Enter up to 2 trusted links (e.g. Wikipedia, Forbes)" class="border rounded p-2 w-full text-sm">
-                </div>
-              </td>
             </tr>
           </tbody>
         </table>
-
-        <p class="text-md text-red-600 mt-2">Content is 600 words and you may add 1–2 trust links.</p>
       </div>
 
       <!-- Totals -->
@@ -149,8 +120,8 @@ $finalTotalFormatted = number_format($finalTotal, 2);
 
       <!-- Requirements -->
       <div class="mb-6">
-        <label for="requirements" class="block font-semibold mb-2">Requirements / Notes <span class="text-red-600">*</span></label>
-        <textarea id="requirements" name="requirements" rows="3" required placeholder="Add any specific notes or special requests for your order..." class="w-full border rounded p-3 text-sm"></textarea>
+        <label for="requirements" class="block font-semibold mb-2">Requirements / Notes</label>
+        <textarea id="requirements" name="requirements" rows="3" placeholder="Add any specific notes or special requests for your order..." class="w-full border rounded p-3 text-sm"></textarea>
       </div>
 
       <!-- Payment Method -->
@@ -257,24 +228,6 @@ $finalTotalFormatted = number_format($finalTotal, 2);
   </div>
 
 <script>
-// ✅ Add Content Checkbox
-document.querySelector('.add-content').addEventListener('change', function() {    
-    const form = document.getElementById('content-form');
-    const priceCell = document.querySelector('#cart-total');
-    const basePrice = <?= $site['price'] ?>;
-    let total = basePrice;
-
-    if (this.checked) {
-        form.classList.remove('hidden');
-        total += 20;
-    } else {
-        form.classList.add('hidden');
-    }
-
-    priceCell.textContent = total.toFixed(2);
-    document.getElementById('input-total').value = total.toFixed(2);
-});
-
 // ✅ Payment Method Logic
 document.addEventListener('DOMContentLoaded', function() {
     const paymentOptions = document.querySelectorAll('.payment-option');
@@ -306,9 +259,6 @@ document.addEventListener('DOMContentLoaded', function() {
     orderForm.addEventListener('submit', function(e) {
         e.preventDefault(); // prevent normal submission
         const formData = new FormData(orderForm);
-
-        // Add content default 0 if not checked
-        if (!formData.has('add_content')) formData.append('add_content', 0);
 
         fetch('submit_order.php', {
             method: 'POST',

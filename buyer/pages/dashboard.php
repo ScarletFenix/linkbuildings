@@ -49,32 +49,75 @@ $userName = $_SESSION['user_name'] ?? 'Buyer';
     </div>
   </section>
 
-  <!-- 📋 Recent Orders -->
-  <section class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-    <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-semibold text-gray-800">Recent Orders</h3>
-      <a href="#" data-page="orders" class="text-blue-600 hover:underline text-sm">View All</a>
+  <!-- 🧱 Info & Consulting Section -->
+  <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- 💡 About Link Building -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col justify-center items-center text-center space-y-4">
+      <div class="max-w-md">
+        <h3 class="text-xl font-semibold text-gray-800 mb-2">About Link Building</h3>
+        <p class="text-gray-600 leading-relaxed">
+          Link building is one of the most crucial aspects of SEO — it strengthens your website’s authority and improves visibility across search engines.
+          Our platform connects you with verified publishers, ensuring every link adds real value to your digital presence.
+        </p>
+        <ul class="space-y-2 text-gray-600 list-disc list-inside text-left mt-4">
+          <li>High-quality backlinks from trusted domains</li>
+          <li>Transparent order tracking and reporting</li>
+          <li>Tailored strategies for your niche</li>
+        </ul>
+        <div class="mt-6">
+          <a href="#" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition">
+            Learn More
+            <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+          </a>
+        </div>
+      </div>
     </div>
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm text-left text-gray-600">
-        <thead class="text-xs uppercase bg-gray-50 text-gray-500">
-          <tr>
-            <th class="px-4 py-3">Order ID</th>
-            <th class="px-4 py-3">Website</th>
-            <th class="px-4 py-3">Date</th>
-            <th class="px-4 py-3">Status</th>
-            <th class="px-4 py-3 text-right">Amount</th>
-          </tr>
-        </thead>
-        <tbody id="recentOrdersBody">
-          <tr>
-            <td colspan="5" class="text-center py-4 text-gray-400">Loading recent orders...</td>
-          </tr>
-        </tbody>
-      </table>
+
+    <!-- 💬 Consulting with Henry -->
+<div class="bg-gradient-to-br from-pink-50 to-white border border-gray-100 rounded-xl shadow-sm p-6 flex flex-col justify-center items-center text-center space-y-4">
+  <img src="https://i.pravatar.cc/100?img=12" alt="Henry" class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md">
+  <div class="max-w-md">
+    <h3 class="text-lg font-semibold text-gray-800">Consulting with <span class="text-pink-600">Henry</span></h3>
+    <p class="text-gray-600 text-sm mb-4">
+      SEO strategist with 8+ years of experience in outreach and authority link campaigns.
+    </p>
+    <p class="text-gray-600 leading-relaxed">
+      Book a Google Meet session with Henry to discuss your brand’s growth strategy, backlink opportunities, and SEO campaign improvements.
+    </p>
+    <div class="mt-6">
+      <a href="https://meet.google.com/" target="_blank" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition">
+        <i data-lucide="phone" class="w-4 h-4 mr-2"></i> Call with Google Meet
+      </a>
     </div>
-  </section>
+  </div>
 </div>
 
-<!-- <script src="../assets/js/dashboard.js"></script> -->
- <script src="<?= rtrim($_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'], '/') ?>/linkbuildings/buyer/assets/js/dashboard.js"></script>
+  </section>
+
+  <!-- 🎥 How Our Platform Works -->
+  <section class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+  <h3 class="text-lg font-semibold text-gray-800 mb-6 text-center">
+    How Our Platform Works
+  </h3>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- 🎥 Responsive 16:9 Video Placeholders -->
+    <div class="bg-gray-100 rounded-lg aspect-video flex flex-col items-center justify-center text-gray-400 hover:bg-gray-200 transition">
+      <span>Video Placeholder</span>
+    </div>
+
+    <div class="bg-gray-100 rounded-lg aspect-video flex flex-col items-center justify-center text-gray-400 hover:bg-gray-200 transition">
+      <span>Video Placeholder</span>
+    </div>
+
+    <div class="bg-gray-100 rounded-lg aspect-video flex flex-col items-center justify-center text-gray-400 hover:bg-gray-200 transition">
+      <span>Video Placeholder</span>
+    </div>
+  </div>
+</section>
+
+
+</div>
+
+<!-- ✅ Keep dashboard JS intact -->
+<script src="<?= rtrim($_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'], '/') ?>/linkbuildings/buyer/assets/js/dashboard.js"></script>

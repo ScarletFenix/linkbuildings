@@ -26,13 +26,15 @@ $userName = $_SESSION['user_name'] ?? 'Buyer';
             <th class="px-4 py-3">Order ID</th>
             <th class="px-4 py-3">Website</th>
             <th class="px-4 py-3">Date</th>
-            <th class="px-4 py-3">Status</th>
+            <th class="px-4 py-3">Payment Method</th>
+            <th class="px-4 py-3">Payment Status</th>
+            <th class="px-4 py-3">Order Status</th>
             <th class="px-4 py-3 text-right">Amount</th>
           </tr>
         </thead>
         <tbody id="ordersTableBody">
           <tr>
-            <td colspan="5" class="text-center py-4 text-gray-400">Loading orders...</td>
+            <td colspan="7" class="text-center py-4 text-gray-400">Loading orders...</td>
           </tr>
         </tbody>
       </table>
@@ -40,5 +42,5 @@ $userName = $_SESSION['user_name'] ?? 'Buyer';
   </section>
 </div>
 
-<!-- <script src="../assets/js/dashboard.js"></script> -->
- <script src="<?= rtrim($_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'], '/') ?>/linkbuildings/buyer/assets/js/orders.js"></script>
+<!-- ✅ Linked JS file -->
+<script src="<?= rtrim($_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'], '/') ?>/linkbuildings/buyer/assets/js/orders.js"></script>
