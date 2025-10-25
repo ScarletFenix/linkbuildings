@@ -78,12 +78,12 @@ if (isset($_GET['ajax'])) {
       <a href="platform.php?page=orders" data-page="orders" class="nav-link flex items-center p-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600">
         <i class="fas fa-shopping-cart mr-3"></i> <span>Orders</span>
       </a>
-      <a href="platform.php?page=buyers" data-page="buyers" class="nav-link flex items-center p-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600">
+      <!-- <a href="platform.php?page=buyers" data-page="buyers" class="nav-link flex items-center p-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600">
         <i class="fas fa-users mr-3"></i> <span>Buyers</span>
       </a>
       <a href="platform.php?page=settings" data-page="settings" class="nav-link flex items-center p-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600">
         <i class="fas fa-cog mr-3"></i> <span>Settings</span>
-      </a>
+      </a> -->
     </nav>
 
     <!-- User details -->
@@ -187,6 +187,5 @@ if (isset($_GET['ajax'])) {
 <script src="assets/js/tables.js"></script>
 
 
-
 </body>
-</html>
+</html> 
